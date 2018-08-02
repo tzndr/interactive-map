@@ -1,6 +1,6 @@
 var model = {
   map: null,
-  
+
   locations: [
     {title: 'Apple', location: {lat:37.331676, lng: -122.030189}},
     {title: 'AMD', location: {lat:37.385777, lng: -121.998558}},
@@ -25,8 +25,8 @@ var model = {
   function initMap() {
     // Constructor creates a new map - only center and zoom are required.
     model.map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 37.4027209, lng: -122.1811805},
-      zoom: 11.5,
+      center: {lat: 37.485034, lng: -121.964375},
+      zoom: 11.2,
       mapTypeControl: false
     });
   }
