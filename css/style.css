@@ -26,3 +26,8 @@ body {
   border-radius: 3px;
   text-align: center;
 }
+
+#pano {
+  width: 200px;
+  height: 200px;
+}
