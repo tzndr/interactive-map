@@ -7,8 +7,16 @@
     <div id="floating-panel">
       <input id="show-companies" type="button" value="Show Companies">
       <input id="hide-companies" type="button" value="Hide Companies">
+      <hr>
+      <div class="list-text">
+        <ul data-bind="foreach: companyList">
+          <li data-bind="text: name"></li>
+        </ul>
+      </div>
+      <hr>
     </div>
     <div id="map"></div>
+    <script src="js/lib/knockout-3.2.0.js"></script>"
     <script src="js/app.js"></script>
     <script async defer
         src=

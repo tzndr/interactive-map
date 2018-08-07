@@ -1,3 +1,28 @@
+var locations = [
+  {title: 'Apple', location: {lat:37.331676, lng: -122.030189}},
+  {title: 'AMD', location: {lat:37.385777, lng: -121.998558}},
+  {title: 'Lockheed Martin', location: {lat:37.415918, lng: -122.035878}},
+  {title: 'HP (Hewlett Packard)', location: {lat:37.412339, lng: -122.14796}},
+  {title: 'EA (Electronic Arts)', location: {lat:37.523279, lng: -122.254144}},
+  {title: 'Cisco', location: {lat:37.408177, lng: -121.928128}},
+  {title: 'Google', location: {lat:37.422, lng: -122.084057}},
+  {title: 'Nvidia', location: {lat:37.370535, lng: -121.966749}},
+  {title: 'Netflix', location: {lat:37.257103, lng: -121.964178}},
+  {title: 'Facebook', location: {lat:37.485071, lng: -122.147424}},
+  {title: 'Oracle', location: {lat:37.532098, lng: -122.263174}},
+  {title: 'Tesla', location: {lat:37.394706, lng: -122.150325}},
+  {title: 'Symantec', location: {lat: 37.398196, lng: -122.054466}},
+  {title: 'Intel', location: {lat: 37.387591, lng: -121.963787}},
+  {title: 'Riverbed Technology', location: {lat:37.397707 , lng: -122.030075}},
+  {title: 'Agilent Technologies', location: {lat:37.324886 , lng: -121.998857}},
+  {title: 'Visa', location: {lat: 37.559252, lng: -122.276365}}
+];
+
+var Company = function(data) {
+  this.name = ko.observable(data.title);
+  this.location = ko.observable(data.location);
+}
+
 var map = null;
 
 var markers = [];
@@ -9,25 +34,7 @@ function initMap() {
     mapTypeControl: false
   });
 
-  locations = [
-    {title: 'Apple', location: {lat:37.331676, lng: -122.030189}},
-    {title: 'AMD', location: {lat:37.385777, lng: -121.998558}},
-    {title: 'Lockheed Martin', location: {lat:37.415918, lng: -122.035878}},
-    {title: 'HP (Hewlett Packard)', location: {lat:37.412339, lng: -122.14796}},
-    {title: 'EA (Electronic Arts)', location: {lat:37.523279, lng: -122.254144}},
-    {title: 'Cisco', location: {lat:37.408177, lng: -121.928128}},
-    {title: 'Google', location: {lat:37.422, lng: -122.084057}},
-    {title: 'Nvidia', location: {lat:37.370535, lng: -121.966749}},
-    {title: 'Netflix', location: {lat:37.257103, lng: -121.964178}},
-    {title: 'Facebook', location: {lat:37.485071, lng: -122.147424}},
-    {title: 'Oracle', location: {lat:37.532098, lng: -122.263174}},
-    {title: 'Tesla', location: {lat:37.394706, lng: -122.150325}},
-    {title: 'Symantec', location: {lat: 37.398196, lng: -122.054466}},
-    {title: 'Intel', location: {lat: 37.387591, lng: -121.963787}},
-    {title: 'Riverbed Technology', location: {lat:37.397707 , lng: -122.030075}},
-    {title: 'Agilent Technologies', location: {lat:37.324886 , lng: -121.998857}},
-    {title: 'Visa', location: {lat: 37.559252, lng: -122.276365}}
-  ];
+  locations = locations;
 
   var defaultIcon = makeMarkerIcon('BB0202');
 
@@ -128,3 +135,19 @@ function populateInfoWindow(marker, infowindow) {
     infowindow.open(map, marker);
   }
 }
+
+var ViewModel = function() {
+  var self = this;
+
+  this.companyList = ko.observableArray([]);
+  locations.forEach(function(companyItem) {
+    self.companyList.push(new Company(companyItem));
+  });
+
+  //this.currentCompany = ko.observable( this.companyList()[0] );
+  //this.changeCompany = function(clickedCompany) {
+  //  self.currentCompany(clickedCompany);
+  //};
+}
+
+ko.applyBindings(new ViewModel());
