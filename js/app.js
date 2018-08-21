@@ -1,3 +1,5 @@
+/*-----MODEL-----*/
+
 var locations = [
   {title: 'Apple', location: {lat:37.331676, lng: -122.030189}},
   {title: 'AMD', location: {lat:37.385777, lng: -121.998558}},
@@ -42,7 +44,7 @@ function initMap() {
 
   var mainInfoWindow = new google.maps.InfoWindow();
 
-  for (var i =0; i < locations.length; i++) {
+  for (var i = 0; i < locations.length; i++) {
     var position = locations[i].location;
     var title = locations[i].title;
 
@@ -136,18 +138,22 @@ function populateInfoWindow(marker, infowindow) {
   }
 }
 
+
+/*-----VIEWMODEL-----*/
 var ViewModel = function() {
   var self = this;
 
   this.companyList = ko.observableArray([]);
-  locations.forEach(function(companyItem) {
-    self.companyList.push(new Company(companyItem));
+
+  locations.forEach(function(companyInfo) {
+    self.companyList.push(new Company(companyInfo));
   });
 
-  //this.currentCompany = ko.observable( this.companyList()[0] );
-  //this.changeCompany = function(clickedCompany) {
-  //  self.currentCompany(clickedCompany);
-  //};
+  this.chosenCompany = ko.observable();
+
+  this.changeCompany = function(Company) {
+    console.log(self.chosenCompany());
+  }
 }
 
 ko.applyBindings(new ViewModel());

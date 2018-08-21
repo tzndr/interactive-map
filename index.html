@@ -2,17 +2,24 @@
 <html lang="en">
   <head>
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Silicon Valley Interactive Map</title>
   </head>
   <body>
     <div id="floating-panel">
-      <input id="show-companies" type="button" value="Show Companies">
-      <input id="hide-companies" type="button" value="Hide Companies">
+      <p class="title">Silicon Valley Interactive Map</p>
+      <input id="show-companies" type="button" value="Show All Companies">
+      <input id="hide-companies" type="button" value="Hide All Companies">
       <hr>
-      <div class="list-text">
-        <ul data-bind="foreach: companyList">
-          <li data-bind="text: name"></li>
-        </ul>
-      </div>
+      <span class="heading-text">Select a Company</span>
+      <select id="company-list" data-bind="options: companyList,
+                                           optionsText: function(Company) {
+                                             return Company.name
+                                           },
+                                           value: chosenCompany,
+                                           optionsCaption: 'Select a Company',
+                                           event: {change: changeCompany}">
+      <!--<option data-bind="text: name, value: $parent.changeCompany"></option>-->
+      </select>
       <hr>
     </div>
     <div id="map"></div>

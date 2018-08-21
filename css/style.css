@@ -32,6 +32,16 @@ body {
   height: 200px;
 }
 
-.list-text {
-  text-align: left;
+.title {
+  margin: 0 0 10px 0;
+  font: bold 16pt helvetica, arial;
+}
+
+.heading-text {
+  margin: 10px 0 0 0;
+  text-align: center;
+}
+
+#company-list {
+  margin: 0 15px 0 15px;
 }
