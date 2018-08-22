@@ -27,7 +27,7 @@ var Company = function(data) {
 
 var map = null;
 
-var markers = [];
+var markers = ko.observableArray([]);
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -55,6 +55,7 @@ function initMap() {
       icon: defaultIcon,
       id: i
     });
+
     markers.push(marker);
     marker.addListener('click', function() {
       populateInfoWindow(this, mainInfoWindow);
@@ -90,9 +91,9 @@ function makeMarkerIcon(markerColor) {
 function showCompanies() {
   var bounds = new google.maps.LatLngBounds();
   // Extend the boundaries of the map for each marker and display the marker
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-    bounds.extend(markers[i].position);
+  for (var i = 0; i < markers().length; i++) {
+    markers()[i].setMap(map);
+    bounds.extend(markers()[i].position);
   }
   map.fitBounds(bounds);
 }
@@ -101,6 +102,10 @@ function hideCompanies() {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(null);
   }
+}
+
+function showChosenCompany() {
+  hideCompanies();
 }
 
 function populateInfoWindow(marker, infowindow) {
@@ -151,8 +156,8 @@ var ViewModel = function() {
 
   this.chosenCompany = ko.observable();
 
-  this.changeCompany = function(Company) {
-    console.log(self.chosenCompany());
+  this.changeCompany = function() {
+    showChosenCompany();
   }
 }
 
