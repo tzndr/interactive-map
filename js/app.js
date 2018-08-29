@@ -40,6 +40,8 @@ function initMap() {
 
   locations = locations;
 
+  var mainInfoWindow = new google.maps.InfoWindow();
+
   var defaultIcon = makeMarkerIcon('FF4B40');
 
   var highlightedIcon = makeMarkerIcon('86DFF9');
@@ -58,7 +60,11 @@ function initMap() {
 
     markers.push(marker);
     marker.addListener('click', function() {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setAnimation(null);
+      }
       populateInfoWindow(this, mainInfoWindow);
+      this.setAnimation(google.maps.Animation.BOUNCE);
     });
     marker.addListener('mouseover', function() {
       this.setIcon(highlightedIcon);
@@ -69,11 +75,11 @@ function initMap() {
   }
 
   document.getElementById('show-companies').addEventListener('click', function() {
-    showCompanies()
+    showCompanies();
   });
 
   document.getElementById('hide-companies').addEventListener('click', function() {
-    hideCompanies()
+    hideCompanies();
   });
 }
 
