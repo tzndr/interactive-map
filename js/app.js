@@ -53,7 +53,7 @@ function initMap() {
     var marker = new google.maps.Marker({
       position: position,
       title: title,
-      animation: google.maps.Animation.DROP,
+      animation: null,
       icon: defaultIcon,
       id: i
     });
@@ -63,8 +63,8 @@ function initMap() {
       for (var i = 0; i < markers.length; i++) {
         markers[i].setAnimation(null);
       }
-      populateInfoWindow(this, mainInfoWindow);
       this.setAnimation(google.maps.Animation.BOUNCE);
+      populateInfoWindow(this, mainInfoWindow);
     });
     marker.addListener('mouseover', function() {
       this.setIcon(highlightedIcon);
@@ -73,6 +73,8 @@ function initMap() {
       this.setIcon(defaultIcon);
     });
   }
+
+  showCompanies();
 
   document.getElementById('show-companies').addEventListener('click', function() {
     showCompanies();
@@ -98,6 +100,7 @@ function showCompanies() {
   var bounds = new google.maps.LatLngBounds();
   // Extend the boundaries of the map for each marker and display the marker
   for (var i = 0; i < markers.length; i++) {
+    markers[i].setAnimation(google.maps.Animation.DROP)
     markers[i].setMap(map);
     bounds.extend(markers[i].position);
   }
@@ -121,7 +124,7 @@ function showSingleCompany() {
       map.panTo(markers[i].position);
       map.setZoom(13);
       populateInfoWindow(markers[i], mainInfoWindow);
-      document.getElementById('company-list').addEventListener('change', function() {
+      document.getElementById('company-list').addEventListener('select', function() {
         mainInfoWindow.close();
       });
       document.getElementById('show-companies').addEventListener('click', function() {
@@ -137,6 +140,7 @@ function populateInfoWindow(marker, mainInfoWindow) {
     mainInfoWindow.marker = marker;
     mainInfoWindow.addListener('closeclick', function() {
       mainInfoWindow.marker = null;
+      marker.setAnimation(null);
     });
     var streetViewService = new google.maps.StreetViewService();
     var radius = 125;
