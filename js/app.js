@@ -29,6 +29,8 @@ var chosenCompany = ko.observable();
 
 var map = null;
 
+var polygon = null;
+
 var markers = [];
 
 function initMap() {
@@ -41,6 +43,17 @@ function initMap() {
   locations = locations;
 
   var mainInfoWindow = new google.maps.InfoWindow();
+
+  var drawingManager = new google.maps.drawing.DrawingManager({
+    drawingMode: google.maps.drawing.OverlayType.POLYGON,
+    drawingControl: true,
+    drawingControlOptions: {
+      position: google.maps.ControlPosition.TOP_LEFT,
+      drawingModes: [
+        google.maps.drawing.OverlayType.POLYGON
+      ]
+    }
+  });
 
   var defaultIcon = makeMarkerIcon('FF4B40');
 
@@ -82,6 +95,23 @@ function initMap() {
 
   document.getElementById('hide-companies').addEventListener('click', function() {
     hideCompanies();
+  });
+
+  document.getElementById('drawing-tools').addEventListener('click', function() {
+    toggleDrawingTools(drawingManager);
+  });
+
+  drawingManager.addListener('overlaycomplete', function(event) {
+    if (polygon) {
+      polygon.setMap(null);
+      hideCompanies();
+    }
+    drawingManager.setDrawingMode(null);
+    polygon = event.overlay;
+    polygon.setEditable(true);
+    searchWithinPolygon();
+    polygon.getPath().addListener('set_at', searchWithinPolygon);
+    polygon.getPath().addListener('insert_at', searchWithinPolygon);
   });
 }
 
@@ -167,6 +197,28 @@ function populateInfoWindow(marker, mainInfoWindow) {
     }
     streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
     mainInfoWindow.open(map, marker);
+  }
+}
+
+function toggleDrawingTools(drawingManager) {
+  if (drawingManager.map) {
+    drawingManager.setMap(null);
+    if (polygon) {
+      polygon.setMap(null);
+    }
+  } else {
+    drawingManager.setMap(map);
+    hideCompanies();
+  }
+}
+
+function searchWithinPolygon() {
+  for (var i = 0; i < markers.length; i++) {
+    if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
+      markers[i].setMap(map);
+    } else {
+      markers[i].setMap(null);
+    }
   }
 }
 
