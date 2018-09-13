@@ -114,8 +114,8 @@ var ViewModel = function() {
 
       markers.push(marker);
       marker.addListener('click', function() {
-        self.getWiki();
         self.companyName(this.title);
+        self.getWiki();
         for (var i = 0; i < markers.length; i++) {
           markers[i].setAnimation(null);
         }
