@@ -16,6 +16,7 @@ body {
   line-height: 30px;
   padding-left: 10px;
   width: 23%;
+  max-width: 250px;
   top: 10px;
   left: 72%;
   z-index: 5;
@@ -42,6 +43,20 @@ body {
   text-align: center;
 }
 
+.second-line-text {
+  margin: auto;
+  text-align: center;
+}
+
 #company-list {
   margin: 0 15px 0 15px;
+}
+
+#drawing-tools {
+  outline: none;
+}
+
+option,
+#wiki-links {
+  width: 85%;
 }

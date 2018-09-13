@@ -5,25 +5,38 @@
     <title>Silicon Valley Interactive Map</title>
   </head>
   <body>
-    <div id="floating-panel">
+    <div id="map"></div>
+  <div id="floating-panel">
       <p class="title">Silicon Valley Interactive Map</p>
-      <input id="show-companies" type="button" value="Show All Companies">
-      <input id="hide-companies" type="button" value="Hide All Companies">
+      <input id="show-companies" data-bind="click: showCompanies" type="button"
+        value="Show All Companies">
+      <input id="hide-companies" data-bind="click: hideCompanies" type="button"
+        value="Hide All Companies">
       <hr>
       <span class="heading-text">Select a Company</span>
       <select id="company-list" data-bind="options: companyList,
-                                           optionsText: function(Company) {
-                                             return Company.name
-                                           },
+                                           optionsText: 'name',
                                            value: chosenCompany,
                                            optionsCaption: 'Select...',
                                            event: {change: showSingleCompany}">
       </select>
       <hr>
+      <span class="heading-text">Toggle Drawing Search</span>
       <input id="drawing-tools" type="button" value="Drawing Tools">
+      <hr>
+      <div id="company-info-headline" class="title"
+        data-bind="text: companyName">
+      </div>
+      <div>Wikipedia Links</div>
+      <select id="company-info-wiki" data-bind="options: wikiLinks,
+                                           optionsText: 'title',
+                                           value: 'url',
+                                           optionsCaption: 'Select...'">
+      </select>
+      <hr>
     </div>
-    <div id="map"></div>
-    <script src="js/lib/knockout-3.2.0.js"></script>"
+    <script src="js/libs/knockout-3.2.0.js"></script>"
+    <script src="js/libs/jquery.min.js"></script>
     <script src="js/app.js"></script>
     <script async defer
         src=

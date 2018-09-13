@@ -4,8 +4,8 @@ var locations = [
   {title: 'Apple', location: {lat:37.331676, lng: -122.030189}},
   {title: 'AMD', location: {lat:37.385777, lng: -121.998558}},
   {title: 'Lockheed Martin', location: {lat:37.415918, lng: -122.035878}},
-  {title: 'HP (Hewlett Packard)', location: {lat:37.412339, lng: -122.14796}},
-  {title: 'EA (Electronic Arts)', location: {lat:37.523279, lng: -122.254144}},
+  {title: 'Hewlett Packard', location: {lat:37.412339, lng: -122.14796}},
+  {title: 'Electronic Arts', location: {lat:37.523279, lng: -122.254144}},
   {title: 'Cisco', location: {lat:37.408177, lng: -121.928128}},
   {title: 'Google', location: {lat:37.422, lng: -122.084057}},
   {title: 'Nvidia', location: {lat:37.370535, lng: -121.966749}},
@@ -20,18 +20,19 @@ var locations = [
   {title: 'Visa', location: {lat: 37.559252, lng: -122.276365}}
 ];
 
-var Company = function(data) {
-  this.name = ko.observable(data.title);
-  this.location = ko.observable(data.location);
-}
+var map;
 
-var chosenCompany = ko.observable();
-
-var map = null;
-
-var polygon = null;
+var polygon;
 
 var markers = [];
+
+var defaultIcon;
+
+var highlightedIcon;
+
+var mainInfoWindow;
+
+var drawingManager;
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -40,11 +41,26 @@ function initMap() {
     mapTypeControl: false
   });
 
+  function makeMarkerIcon(markerColor) {
+    var markerImage = new google.maps.MarkerImage(
+      'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+      '|80|_|%E2%80%A2',
+      new google.maps.Size(31, 54),
+      new google.maps.Point(0, 0),
+      new google.maps.Point(10, 34),
+      new google.maps.Size(31,54));
+    return markerImage;
+  }
+
   locations = locations;
 
-  var mainInfoWindow = new google.maps.InfoWindow();
+  defaultIcon = makeMarkerIcon('FF4B40');
 
-  var drawingManager = new google.maps.drawing.DrawingManager({
+  highlightedIcon = makeMarkerIcon('86DFF9');
+
+  mainInfoWindow = new google.maps.InfoWindow();
+
+  drawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: google.maps.drawing.OverlayType.POLYGON,
     drawingControl: true,
     drawingControlOptions: {
@@ -54,184 +70,199 @@ function initMap() {
       ]
     }
   });
-
-  var defaultIcon = makeMarkerIcon('FF4B40');
-
-  var highlightedIcon = makeMarkerIcon('86DFF9');
-
-  for (var i = 0; i < locations.length; i++) {
-    var position = locations[i].location;
-    var title = locations[i].title;
-
-    var marker = new google.maps.Marker({
-      position: position,
-      title: title,
-      animation: null,
-      icon: defaultIcon,
-      id: i
-    });
-
-    markers.push(marker);
-    marker.addListener('click', function() {
-      for (var i = 0; i < markers.length; i++) {
-        markers[i].setAnimation(null);
-      }
-      this.setAnimation(google.maps.Animation.BOUNCE);
-      populateInfoWindow(this, mainInfoWindow);
-    });
-    marker.addListener('mouseover', function() {
-      this.setIcon(highlightedIcon);
-    });
-    marker.addListener('mouseout', function() {
-      this.setIcon(defaultIcon);
-    });
-  }
-
-  showCompanies();
-
-  document.getElementById('show-companies').addEventListener('click', function() {
-    showCompanies();
-  });
-
-  document.getElementById('hide-companies').addEventListener('click', function() {
-    hideCompanies();
-  });
-
-  document.getElementById('drawing-tools').addEventListener('click', function() {
-    toggleDrawingTools(drawingManager);
-  });
-
-  drawingManager.addListener('overlaycomplete', function(event) {
-    if (polygon) {
-      polygon.setMap(null);
-      hideCompanies();
-    }
-    drawingManager.setDrawingMode(null);
-    polygon = event.overlay;
-    polygon.setEditable(true);
-    searchWithinPolygon();
-    polygon.getPath().addListener('set_at', searchWithinPolygon);
-    polygon.getPath().addListener('insert_at', searchWithinPolygon);
-  });
 }
 
-function makeMarkerIcon(markerColor) {
-  var markerImage = new google.maps.MarkerImage(
-    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-    '|80|_|%E2%80%A2',
-    new google.maps.Size(31, 54),
-    new google.maps.Point(0, 0),
-    new google.maps.Point(10, 34),
-    new google.maps.Size(31,54));
-  return markerImage;
-}
-
-function showCompanies() {
-  var bounds = new google.maps.LatLngBounds();
-  // Extend the boundaries of the map for each marker and display the marker
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setAnimation(google.maps.Animation.DROP)
-    markers[i].setMap(map);
-    bounds.extend(markers[i].position);
-  }
-  map.fitBounds(bounds);
-}
-
-function hideCompanies() {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-    markers[i].setAnimation(google.maps.Animation.DROP);
-  }
-}
-
-function showSingleCompany() {
-  var mainInfoWindow = new google.maps.InfoWindow();
-  hideCompanies();
-  for (var i = 0; i < markers.length; i++) {
-    if (chosenCompany().name() == markers[i].title) {
-      markers[i].setAnimation(google.maps.Animation.BOUNCE);
-      markers[i].setMap(map);
-      map.panTo(markers[i].position);
-      map.setZoom(13);
-      populateInfoWindow(markers[i], mainInfoWindow);
-      document.getElementById('company-list').addEventListener('select', function() {
-        mainInfoWindow.close();
-      });
-      document.getElementById('show-companies').addEventListener('click', function() {
-        mainInfoWindow.close();
-      });
-    }
-  }
-}
-
-function populateInfoWindow(marker, mainInfoWindow) {
-  if (mainInfoWindow.marker != marker) {
-    mainInfoWindow.setContent('');
-    mainInfoWindow.marker = marker;
-    mainInfoWindow.addListener('closeclick', function() {
-      mainInfoWindow.marker = null;
-      marker.setAnimation(null);
-    });
-    var streetViewService = new google.maps.StreetViewService();
-    var radius = 125;
-    function getStreetView(data, status) {
-      if (status === google.maps.StreetViewStatus.OK) {
-        var nearStreetViewLocation = data.location.latLng;
-        var heading = google.maps.geometry.spherical.computeHeading(
-          nearStreetViewLocation, marker.position);
-          mainInfoWindow.setContent('<div><strong>' + marker.title + '</strong></div>' +
-            '<div id="pano"></div>');
-          var panoramaOptions = {
-            position: nearStreetViewLocation,
-            pov: {
-              heading: heading,
-              pitch: 20
-            }
-          };
-        var panorama = new google.maps.StreetViewPanorama(
-          document.getElementById('pano'), panoramaOptions);
-      } else {
-        mainInfoWindow.setContent('<div><strong>' + marker.title + '</strong></div>' +
-          '<div>No Street View Found</div>');
-      }
-    }
-    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-    mainInfoWindow.open(map, marker);
-  }
-}
-
-function toggleDrawingTools(drawingManager) {
-  if (drawingManager.map) {
-    drawingManager.setMap(null);
-    if (polygon) {
-      polygon.setMap(null);
-    }
-  } else {
-    drawingManager.setMap(map);
-    hideCompanies();
-  }
-}
-
-function searchWithinPolygon() {
-  for (var i = 0; i < markers.length; i++) {
-    if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
-      markers[i].setMap(map);
-    } else {
-      markers[i].setMap(null);
-    }
-  }
+var Company = function(data) {
+  this.name = ko.observable(data.title);
+  this.location = ko.observable(data.location);
 }
 
 
 /*-----VIEWMODEL-----*/
-var ViewModel = function(data) {
+var ViewModel = function() {
+
   var self = this;
+
+  this.companyName = ko.observable('Silicon Valley');
+
+  this.chosenCompany = ko.observable();
+
+  this.wikiLinks = ko.observableArray([]);
 
   this.companyList = ko.observableArray([]);
 
   locations.forEach(function(companyInfo) {
     self.companyList.push(new Company(companyInfo));
   });
+
+  this.showCompanies = function() {
+    this.companyName('Silicon Valley');
+    self.getWiki();
+    var bounds = new google.maps.LatLngBounds();
+    // Extend the boundaries of the map for each marker and display the marker
+    for (var i = 0; i < locations.length; i++) {
+      var position = locations[i].location;
+      var title = locations[i].title;
+
+      var marker = new google.maps.Marker({
+        position: position,
+        title: title,
+        animation: null,
+        icon: defaultIcon,
+        id: i
+      });
+
+      markers.push(marker);
+      marker.addListener('click', function() {
+        self.getWiki();
+        self.companyName(this.title);
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setAnimation(null);
+        }
+        this.setAnimation(google.maps.Animation.BOUNCE);
+        self.populateInfoWindow(this, mainInfoWindow);
+      });
+      marker.addListener('mouseover', function() {
+        this.setIcon(highlightedIcon);
+      });
+      marker.addListener('mouseout', function() {
+        this.setIcon(defaultIcon);
+      });
+    }
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setAnimation(google.maps.Animation.DROP)
+      markers[i].setMap(map);
+      bounds.extend(markers[i].position);
+    }
+    map.fitBounds(bounds);
+  }
+
+  this.hideCompanies = function() {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+      markers[i].setAnimation(google.maps.Animation.DROP);
+    }
+  }
+
+  this.showSingleCompany = function() {
+    self.getWiki();
+    var mainInfoWindow = new google.maps.InfoWindow();
+    self.companyName(self.chosenCompany().name());
+    this.hideCompanies();
+    for (var i = 0; i < markers.length; i++) {
+      if (self.companyName() == markers[i].title) {
+        markers[i].setAnimation(google.maps.Animation.BOUNCE);
+        markers[i].setMap(map);
+        map.panTo(markers[i].position);
+        map.setZoom(13);
+        self.populateInfoWindow(markers[i], mainInfoWindow);
+        document.getElementById('company-list').addEventListener('select', function() {
+          mainInfoWindow.close();
+        });
+        document.getElementById('show-companies').addEventListener('click', function() {
+          mainInfoWindow.close();
+        });
+      }
+    }
+  }
+
+  this.populateInfoWindow = function(marker, mainInfoWindow) {
+    if (mainInfoWindow.marker != marker) {
+      mainInfoWindow.setContent('');
+      mainInfoWindow.marker = marker;
+      mainInfoWindow.addListener('closeclick', function() {
+        mainInfoWindow.marker = null;
+        marker.setAnimation(null);
+      });
+      var streetViewService = new google.maps.StreetViewService();
+      var radius = 125;
+
+      this.getStreetView = function(data, status) {
+        if (status === google.maps.StreetViewStatus.OK) {
+          var nearStreetViewLocation = data.location.latLng;
+          var heading = google.maps.geometry.spherical.computeHeading(
+            nearStreetViewLocation, marker.position);
+            mainInfoWindow.setContent('<div><strong>' + marker.title + '</div></strong>' +
+              '<hr>' + '<div id="pano"></div>' + '<hr>');
+            var panoramaOptions = {
+              position: nearStreetViewLocation,
+              pov: {
+                heading: heading,
+                pitch: 20
+              }
+            };
+          var panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('pano'), panoramaOptions);
+        } else {
+          mainInfoWindow.setContent('<div><strong>' + marker.title + '</div></strong>' +
+            '<hr>' + '<div>No Streetview found</div>' + '<hr>');
+        }
+      }
+      streetViewService.getPanoramaByLocation(marker.position, radius, this.getStreetView);
+      mainInfoWindow.open(map, marker);
+    }
+  }
+
+  this.toggleDrawingTools = function(drawingManager) {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+      markers[i].setAnimation(google.maps.Animation.DROP);
+    }
+    if (drawingManager.map) {
+      drawingManager.setMap(null);
+    }
+    document.getElementById('drawing-tools').setAttribute('style', 'background-color: white;');
+    if (polygon) {
+      polygon.setMap(null);
+    } else {
+    drawingManager.setMap(map);
+    document.getElementById('drawing-tools').setAttribute('style', 'background-color: #50D579;');
+    }
+    drawingManager.addListener('overlaycomplete', function(event) {
+      if (polygon) {
+        polygon.setMap(null);
+      }
+      drawingManager.setDrawingMode(null);
+      polygon = event.overlay;
+      polygon.setEditable(true);
+      self.polygonSearch();
+      polygon.getPath().addListener('set_at', self.polygonSearch);
+      polygon.getPath().addListener('insert_at', self.polygonSearch);
+    });
+  }
+
+  this.polygonSearch = function() {
+    for (var i = 0; i < markers.length; i++) {
+      if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
+        markers[i].setMap(map);
+      } else {
+        markers[i].setMap(null);
+      }
+    }
+  }
+
+  document.getElementById('drawing-tools').addEventListener('click', function() {
+    self.toggleDrawingTools(drawingManager);
+  });
+
+  this.getWiki = function() {
+    self.wikiLinks([]);
+    var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='
+    + self.companyName() + '&format=json&callback=wikiCallback';
+    $.ajax( {
+      url: wikiUrl,
+      dataType: "jsonp",
+      success: function(response) {
+        var articleResults = response[1];
+        for (var i = 0; i < articleResults.length; i++)  {
+          var title = articleResults[i];
+          var url = 'http://en.wikipedia.org/wiki/' + title.replace(/ /g, "_");
+          self.wikiLinks.push({title: title, url: url});
+        }
+        console.log(self.wikiLinks());
+      }
+    });
+  }
 }
 
 ko.applyBindings(new ViewModel());
