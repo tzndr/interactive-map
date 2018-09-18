@@ -22,6 +22,8 @@ var locations = [
 
 var map;
 
+var bounds;
+
 var polygon;
 
 var markers = [];
@@ -96,9 +98,9 @@ var ViewModel = function() {
   });
 
   this.showCompanies = function() {
-    this.companyName('Silicon Valley');
+    self.companyName('Silicon Valley');
     self.getWiki();
-    var bounds = new google.maps.LatLngBounds();
+    bounds = new google.maps.LatLngBounds();
     // Extend the boundaries of the map for each marker and display the marker
     for (var i = 0; i < locations.length; i++) {
       var position = locations[i].location;
@@ -145,10 +147,10 @@ var ViewModel = function() {
   }
 
   this.showSingleCompany = function() {
-    self.getWiki();
-    var mainInfoWindow = new google.maps.InfoWindow();
     self.companyName(self.chosenCompany().name());
     this.hideCompanies();
+    self.getWiki();
+    var mainInfoWindow = new google.maps.InfoWindow();
     for (var i = 0; i < markers.length; i++) {
       if (self.companyName() == markers[i].title) {
         markers[i].setAnimation(google.maps.Animation.BOUNCE);
@@ -259,9 +261,13 @@ var ViewModel = function() {
           var url = 'http://en.wikipedia.org/wiki/' + title.replace(/ /g, "_");
           self.wikiLinks.push({title: title, url: url});
         }
-        console.log(self.wikiLinks());
       }
     });
+  }
+  if (typeof google === 'object' && typeof google.maps === 'object') {
+    self.showCompanies();
+  } else {
+    setTimeout(self.showCompanies, 3000);
   }
 }
 

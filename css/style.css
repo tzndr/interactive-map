@@ -48,15 +48,15 @@ body {
   text-align: center;
 }
 
-#company-list {
-  margin: 0 15px 0 15px;
+#company-list,
+#company-info-wiki {
+  width: 200px;
 }
 
 #drawing-tools {
   outline: none;
 }
 
-option,
-#wiki-links {
-  width: 85%;
+option {
+  text-align: center;
 }
