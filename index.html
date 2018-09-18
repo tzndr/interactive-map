@@ -22,7 +22,9 @@
       </select>
       <hr>
       <span class="heading-text">Toggle Drawing Search</span>
-      <input id="drawing-tools" type="button" value="Drawing Tools">
+      <input id="drawing-tools" data-bind="click: toggleDrawingTools"
+        type="button"
+        value="Drawing Tools">
       <hr>
       <div id="company-info-headline" class="title"
         data-bind="text: companyName">

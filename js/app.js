@@ -205,21 +205,38 @@ var ViewModel = function() {
     }
   }
 
-  this.toggleDrawingTools = function(drawingManager) {
+  this.toggleDrawingTools = function() {
+  drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+  if (drawingManager.map) {
+    document.getElementById('drawing-tools').setAttribute('style', 'background-color: white;');
+    drawingManager.setMap(null);
+    if (polygon) {
+      polygon.setMap(null);
+    }
+  } else {
     for (var i = 0; i < markers.length; i++) {
       markers[i].setMap(null);
       markers[i].setAnimation(google.maps.Animation.DROP);
     }
-    if (drawingManager.map) {
-      drawingManager.setMap(null);
-    }
-    document.getElementById('drawing-tools').setAttribute('style', 'background-color: white;');
-    if (polygon) {
-      polygon.setMap(null);
-    } else {
     drawingManager.setMap(map);
+    drawingManager.addListener('overlaycomplete', function(event) {
+      drawingManager.setDrawingMode(null);
+      polygon = event.overlay;
+      polygon.setEditable(true);
+      self.polygonSearch();
+      polygon.getPath().addListener('set_at', self.polygonSearch);
+      polygon.getPath().addListener('insert_at', self.polygonSearch);
+    });
     document.getElementById('drawing-tools').setAttribute('style', 'background-color: #50D579;');
-    }
+  }
+}
+
+  this.activateDrawingTools = function() {
+    //for (var i = 0; i < markers.length; i++) {
+    //  markers[i].setMap(null);
+    //  markers[i].setAnimation(google.maps.Animation.DROP);
+    //}
+
     drawingManager.addListener('overlaycomplete', function(event) {
       if (polygon) {
         polygon.setMap(null);
@@ -231,6 +248,19 @@ var ViewModel = function() {
       polygon.getPath().addListener('set_at', self.polygonSearch);
       polygon.getPath().addListener('insert_at', self.polygonSearch);
     });
+
+    //drawingManager.setMap(map);
+    //document.getElementById('drawing-tools').setAttribute('style', 'background-color: #50D579;');
+  }
+
+  this.deactivateDrawingTools = function() {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+      markers[i].setAnimation(google.maps.Animation.DROP);
+    }
+    polygon.setMap(null);
+    drawingManager.setMap(null);
+    drawingManager.setDrawingMode(null);
   }
 
   this.polygonSearch = function() {
@@ -242,10 +272,6 @@ var ViewModel = function() {
       }
     }
   }
-
-  document.getElementById('drawing-tools').addEventListener('click', function() {
-    self.toggleDrawingTools(drawingManager);
-  });
 
   this.getWiki = function() {
     self.wikiLinks([]);
@@ -267,7 +293,7 @@ var ViewModel = function() {
   if (typeof google === 'object' && typeof google.maps === 'object') {
     self.showCompanies();
   } else {
-    setTimeout(self.showCompanies, 3000);
+    setTimeout(self.showCompanies, 2000);
   }
 }
 
