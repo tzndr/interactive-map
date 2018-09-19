@@ -30,10 +30,21 @@
         data-bind="text: companyName">
       </div>
       <div>Wikipedia Links</div>
+      <div data-bind="text: wikiAlert"></div>
       <select id="company-info-wiki" data-bind="options: wikiLinks,
                                            optionsText: 'title',
-                                           value: 'url',
-                                           optionsCaption: 'Select...'">
+                                           value: chosenWiki,
+                                           optionsCaption: 'Select...',
+                                           event: {change: followWikiLink}">
+      </select>
+      <hr>
+      <div>NY Times Articles</div>
+      <div data-bind="text: nytAlert"></div>
+      <select id="company-info-nytimes" data-bind="options: nytLinks,
+                                           optionsText: 'headline',
+                                           value: chosenNYT,
+                                           optionsCaption: 'Select...',
+                                           event: {change: followNYTLink}">
       </select>
       <hr>
     </div>

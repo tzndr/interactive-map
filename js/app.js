@@ -38,7 +38,7 @@ var drawingManager;
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 37.485034, lng: -121.964375},
+    center: {lat: 37.4400972, lng: -121.8339223},
     zoom: 11.2,
     mapTypeControl: false
   });
@@ -85,23 +85,32 @@ var ViewModel = function() {
 
   var self = this;
 
-  this.companyName = ko.observable('Silicon Valley');
+  this.companyList = ko.observableArray([]);
+
+  this.companyName = ko.observable();
 
   this.chosenCompany = ko.observable();
 
   this.wikiLinks = ko.observableArray([]);
 
-  this.companyList = ko.observableArray([]);
+  this.nytLinks = ko.observableArray([]);
+
+  this.chosenWiki = ko.observable();
+
+  this.chosenNYT = ko.observable();
+
+  this.wikiAlert = ko.observable();
+
+  this.nytAlert = ko.observable();
 
   locations.forEach(function(companyInfo) {
     self.companyList.push(new Company(companyInfo));
   });
 
-  this.showCompanies = function() {
+  this.populateMarkers = function() {
     self.companyName('Silicon Valley');
-    self.getWiki();
+    self.getAJAX();
     bounds = new google.maps.LatLngBounds();
-    // Extend the boundaries of the map for each marker and display the marker
     for (var i = 0; i < locations.length; i++) {
       var position = locations[i].location;
       var title = locations[i].title;
@@ -117,7 +126,7 @@ var ViewModel = function() {
       markers.push(marker);
       marker.addListener('click', function() {
         self.companyName(this.title);
-        self.getWiki();
+        self.getAJAX();
         for (var i = 0; i < markers.length; i++) {
           markers[i].setAnimation(null);
         }
@@ -139,6 +148,14 @@ var ViewModel = function() {
     map.fitBounds(bounds);
   }
 
+  this.showCompanies = function() {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setAnimation(google.maps.Animation.DROP)
+      markers[i].setMap(map);
+      bounds.extend(markers[i].position);
+    }
+  }
+
   this.hideCompanies = function() {
     for (var i = 0; i < markers.length; i++) {
       markers[i].setMap(null);
@@ -149,7 +166,7 @@ var ViewModel = function() {
   this.showSingleCompany = function() {
     self.companyName(self.chosenCompany().name());
     this.hideCompanies();
-    self.getWiki();
+    self.getAJAX();
     var mainInfoWindow = new google.maps.InfoWindow();
     for (var i = 0; i < markers.length; i++) {
       if (self.companyName() == markers[i].title) {
@@ -206,61 +223,29 @@ var ViewModel = function() {
   }
 
   this.toggleDrawingTools = function() {
-  drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
-  if (drawingManager.map) {
-    document.getElementById('drawing-tools').setAttribute('style', 'background-color: white;');
-    drawingManager.setMap(null);
-    if (polygon) {
-      polygon.setMap(null);
-    }
-  } else {
-    for (var i = 0; i < markers.length; i++) {
-      markers[i].setMap(null);
-      markers[i].setAnimation(google.maps.Animation.DROP);
-    }
-    drawingManager.setMap(map);
-    drawingManager.addListener('overlaycomplete', function(event) {
-      drawingManager.setDrawingMode(null);
-      polygon = event.overlay;
-      polygon.setEditable(true);
-      self.polygonSearch();
-      polygon.getPath().addListener('set_at', self.polygonSearch);
-      polygon.getPath().addListener('insert_at', self.polygonSearch);
-    });
-    document.getElementById('drawing-tools').setAttribute('style', 'background-color: #50D579;');
-  }
-}
-
-  this.activateDrawingTools = function() {
-    //for (var i = 0; i < markers.length; i++) {
-    //  markers[i].setMap(null);
-    //  markers[i].setAnimation(google.maps.Animation.DROP);
-    //}
-
-    drawingManager.addListener('overlaycomplete', function(event) {
+    drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+    if (drawingManager.map) {
+      document.getElementById('drawing-tools').setAttribute('style', 'background-color: white;');
+      drawingManager.setMap(null);
       if (polygon) {
         polygon.setMap(null);
       }
-      drawingManager.setDrawingMode(null);
-      polygon = event.overlay;
-      polygon.setEditable(true);
-      self.polygonSearch();
-      polygon.getPath().addListener('set_at', self.polygonSearch);
-      polygon.getPath().addListener('insert_at', self.polygonSearch);
-    });
-
-    //drawingManager.setMap(map);
-    //document.getElementById('drawing-tools').setAttribute('style', 'background-color: #50D579;');
-  }
-
-  this.deactivateDrawingTools = function() {
-    for (var i = 0; i < markers.length; i++) {
-      markers[i].setMap(map);
-      markers[i].setAnimation(google.maps.Animation.DROP);
+    } else {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+        markers[i].setAnimation(google.maps.Animation.DROP);
+      }
+      drawingManager.setMap(map);
+      drawingManager.addListener('overlaycomplete', function(event) {
+        drawingManager.setDrawingMode(null);
+        polygon = event.overlay;
+        polygon.setEditable(true);
+        self.polygonSearch();
+        polygon.getPath().addListener('set_at', self.polygonSearch);
+        polygon.getPath().addListener('insert_at', self.polygonSearch);
+      });
+      document.getElementById('drawing-tools').setAttribute('style', 'background-color: #50D579;');
     }
-    polygon.setMap(null);
-    drawingManager.setMap(null);
-    drawingManager.setDrawingMode(null);
   }
 
   this.polygonSearch = function() {
@@ -273,27 +258,60 @@ var ViewModel = function() {
     }
   }
 
-  this.getWiki = function() {
+  this.getAJAX = function() {
     self.wikiLinks([]);
-    var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='
+    self.nytLinks([]);
+    self.wikiAlert(null);
+    var wikiRequestTimeout = setTimeout(function() {
+      self.wikiAlert(' for ' + self.companyName() + ' could not be loaded at this time');
+    }, 5000);
+    var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='
     + self.companyName() + '&format=json&callback=wikiCallback';
-    $.ajax( {
-      url: wikiUrl,
+    $.ajax({
+      url: wikiURL,
       dataType: "jsonp",
       success: function(response) {
-        var articleResults = response[1];
-        for (var i = 0; i < articleResults.length; i++)  {
-          var title = articleResults[i];
+        var wikiResults = response[1];
+        for (var i = 0; i < wikiResults.length; i++)  {
+          var title = wikiResults[i];
           var url = 'http://en.wikipedia.org/wiki/' + title.replace(/ /g, "_");
           self.wikiLinks.push({title: title, url: url});
+          clearTimeout(wikiRequestTimeout);
         }
       }
     });
+    var nytURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?q='
+        + self.companyName().replace(/ /g, "%") + '&sort=newest&api-key=544f5bc5e26648598845064157acd780';
+    $.getJSON(nytURL, function (data) {
+      var nytResults = data.response.docs;
+      for (var i = 0; i < nytResults.length; i++) {
+        var article = nytResults[i];
+        var headline = article.headline.main;
+        var headlineURL = article.web_url;
+        var snippet = article.snippet;
+        self.nytLinks.push({headline: headline, url: headlineURL, snippet: snippet});
+      };
+    }).fail(function(e){
+        self.nytAlert(' For ' + self.companyName() + ' Could Not Be Loaded At This Time');
+    });
   }
+
+this.followWikiLink = function() {
+  if (typeof self.chosenWiki() != 'undefined') {
+    window.open(self.chosenWiki().url);
+  }
+}
+
+this.followNYTLink = function() {
+  if (typeof self.chosenNYT() != 'undefined') {
+    window.open(self.chosenNYT().url);
+  }
+}
+
   if (typeof google === 'object' && typeof google.maps === 'object') {
     self.showCompanies();
   } else {
-    setTimeout(self.showCompanies, 2000);
+    setTimeout(self.populateMarkers, 1000);
   }
 }
 

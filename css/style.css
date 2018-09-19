@@ -49,8 +49,9 @@ body {
 }
 
 #company-list,
-#company-info-wiki {
-  width: 200px;
+#company-info-wiki,
+#company-info-nytimes {
+  width: 90%;
 }
 
 #drawing-tools {
