@@ -66,7 +66,7 @@ function initMap() {
     drawingMode: google.maps.drawing.OverlayType.POLYGON,
     drawingControl: true,
     drawingControlOptions: {
-      position: google.maps.ControlPosition.TOP_LEFT,
+      position: google.maps.ControlPosition.TOP_RIGHT,
       drawingModes: [
         google.maps.drawing.OverlayType.POLYGON
       ]
@@ -102,6 +102,8 @@ var ViewModel = function() {
   this.wikiAlert = ko.observable();
 
   this.nytAlert = ko.observable();
+
+  this.drawingModeText = ko.observable('Drawing Mode Off');
 
   locations.forEach(function(companyInfo) {
     self.companyList.push(new Company(companyInfo));
@@ -154,6 +156,7 @@ var ViewModel = function() {
       markers[i].setMap(map);
       bounds.extend(markers[i].position);
     }
+    map.fitBounds(bounds);
   }
 
   this.hideCompanies = function() {
@@ -225,7 +228,8 @@ var ViewModel = function() {
   this.toggleDrawingTools = function() {
     drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
     if (drawingManager.map) {
-      document.getElementById('drawing-tools').setAttribute('style', 'background-color: white;');
+      document.getElementById('drawing-tools').setAttribute('class', 'btn');
+      self.drawingModeText('Drawing Mode Off');
       drawingManager.setMap(null);
       if (polygon) {
         polygon.setMap(null);
@@ -244,7 +248,8 @@ var ViewModel = function() {
         polygon.getPath().addListener('set_at', self.polygonSearch);
         polygon.getPath().addListener('insert_at', self.polygonSearch);
       });
-      document.getElementById('drawing-tools').setAttribute('style', 'background-color: #50D579;');
+      document.getElementById('drawing-tools').setAttribute('class', 'btn-drawing-mode-on');
+      self.drawingModeText('Drawing Mode On');
     }
   }
 

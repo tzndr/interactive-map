@@ -10,32 +10,64 @@ body {
  height: 100%;
 }
 
-#floating-panel {
+#floating-panel-main {
   position: absolute;
-  font-family: helvetica,sans-serif;
   line-height: 30px;
-  padding-left: 10px;
   width: 23%;
   max-width: 250px;
-  top: 10px;
-  left: 72%;
+  top: 7px;
+  left: 1%;
   z-index: 5;
-  height:90%;
-  background-color: #F8F8F5;
-  padding: 5px;
+  background-color: white;
+  padding: 0 0 10px 0;
   border: 1px solid #464343;
   border-radius: 3px;
   text-align: center;
 }
 
-#pano {
-  width: 200px;
-  height: 200px;
+#floating-panel-info {
+  position: absolute;
+  line-height: 30px;
+  padding-left: 10px;
+  width: 23%;
+  max-width: 250px;
+  top: 33%;
+  right: 1%;
+  z-index: 5;
+  background-color: white;
+  padding: 0 0 10px 0;
+  border: 1px solid #464343;
+  border-radius: 3px;
+  text-align: center;
 }
 
-.title {
+.news-img {
+  width: 75%;
+  margin: 10px 0 0 0;
+}
+
+.main-img {
+  width: 100%;
+}
+
+.link-text {
   margin: 0 0 10px 0;
-  font: bold 16pt helvetica, arial;
+  line-height: 2px;
+}
+
+.main-title {
+  margin: 0 0 10px 0;
+  font: bold 20pt helvetica, arial;
+}
+
+.company-title {
+  margin: 10px 0 5px 0;
+  font: bold 24pt georgia, arial;
+}
+
+.subheading-text {
+  margin: 0 0 10px 0;
+  font: 16pt helvetica, arial;
 }
 
 .heading-text {
@@ -48,16 +80,43 @@ body {
   text-align: center;
 }
 
+#pano {
+  width: 200px;
+  height: 200px;
+}
+
 #company-list,
 #company-info-wiki,
 #company-info-nytimes {
   width: 90%;
+  font: 11pt helvetica, arial;
+  margin: 0 0 10px 0;
 }
 
 #drawing-tools {
   outline: none;
 }
 
+.btn {
+  width: 65%;
+  font: 10pt helvetica, arial;
+  background-color: #FFC300;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.btn-drawing-mode-on {
+  width: 65%;
+  font: 10pt helvetica, arial;
+  background-color: #67B541;
+  color: white;
+  padding: 4px;
+}
+
 option {
   text-align: center;
+}
+
+hr {
+  width: 90%;
 }

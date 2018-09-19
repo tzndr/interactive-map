@@ -6,12 +6,15 @@
   </head>
   <body>
     <div id="map"></div>
-  <div id="floating-panel">
-      <p class="title">Silicon Valley Interactive Map</p>
-      <input id="show-companies" data-bind="click: showCompanies" type="button"
-        value="Show All Companies">
-      <input id="hide-companies" data-bind="click: hideCompanies" type="button"
-        value="Hide All Companies">
+  <div id="floating-panel-main">
+      <img class="main-img" src="img/siliconvalley.jpeg">
+      <input id="show-companies" data-bind="click: showCompanies" class="btn"
+        type="button" value="Show All Companies">
+      <input id="hide-companies" data-bind="click: hideCompanies" class="btn"
+        type="button" value="Hide All Companies">
+      <button id="drawing-tools" class="btn" data-bind="click: toggleDrawingTools,
+                                                        text: drawingModeText">
+      </button>
       <hr>
       <span class="heading-text">Select a Company</span>
       <select id="company-list" data-bind="options: companyList,
@@ -20,33 +23,37 @@
                                            optionsCaption: 'Select...',
                                            event: {change: showSingleCompany}">
       </select>
-      <hr>
-      <span class="heading-text">Toggle Drawing Search</span>
-      <input id="drawing-tools" data-bind="click: toggleDrawingTools"
-        type="button"
-        value="Drawing Tools">
-      <hr>
-      <div id="company-info-headline" class="title"
-        data-bind="text: companyName">
+    </div>
+    <div id="floating-panel-info">
+      <div id="company-info-headline" class="company-title" data-bind="text: companyName">
       </div>
-      <div>Wikipedia Links</div>
+      <h2 class="subheading-text">Information</h2>
+      <hr>
+      <div>
+        <img class="news-img" src="img/wikilogo.png">
+        <p class="link-text">Links</p>
+      </div>
       <div data-bind="text: wikiAlert"></div>
-      <select id="company-info-wiki" data-bind="options: wikiLinks,
-                                           optionsText: 'title',
-                                           value: chosenWiki,
-                                           optionsCaption: 'Select...',
-                                           event: {change: followWikiLink}">
+      <select id="company-info-wiki"
+              data-bind="options: wikiLinks,
+                         optionsText: 'title',
+                         value: chosenWiki,
+                         optionsCaption: 'Select...',
+                         event: {change: followWikiLink}">
       </select>
       <hr>
-      <div>NY Times Articles</div>
+      <div>
+        <img class="news-img"src="img/nytlogo.png">
+        <p class="link-text">Articles</p>
+      </div>
       <div data-bind="text: nytAlert"></div>
-      <select id="company-info-nytimes" data-bind="options: nytLinks,
-                                           optionsText: 'headline',
-                                           value: chosenNYT,
-                                           optionsCaption: 'Select...',
-                                           event: {change: followNYTLink}">
+      <select id="company-info-nytimes"
+              data-bind="options: nytLinks,
+                         optionsText: 'headline',
+                         value: chosenNYT,
+                         optionsCaption: 'Select...',
+                         event: {change: followNYTLink}">
       </select>
-      <hr>
     </div>
     <script async defer
         src=
