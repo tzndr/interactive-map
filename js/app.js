@@ -168,10 +168,6 @@ var ViewModel = function() {
 
   this.chosenNYT = ko.observable();
 
-  this.wikiAlert = ko.observable();
-
-  this.nytAlert = ko.observable();
-
   this.showHideCompaniesText = ko.observable('Hide All Companies');
 
   this.drawingModeText = ko.observable('Drawing Mode Off');
@@ -374,11 +370,9 @@ var ViewModel = function() {
   //AJAX/JSON requests getting unique results for each selected business asychronously.
   this.sendAJAX = function() {
     self.wikiLinks([]);
-    self.nytLinks([]);
-    self.wikiAlert(null);
     //Shows error message if the request in unsuccessful.
     var wikiRequestTimeout = setTimeout(function() {
-      self.wikiAlert(' for ' + self.companyName() + ' could not be loaded at this time');
+      alert('Wikipedia links for ' + self.companyName() + ' could not be loaded at this time');
     }, 5000);
     var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='
     + self.companyName() + '&format=json&callback=wikiCallback';
@@ -410,7 +404,8 @@ var ViewModel = function() {
       };
       //Shows error message if the request in unsuccessful.
     }).fail(function(e){
-        self.nytAlert(' for ' + self.companyName() + ' could not be loaded at this time');
+        alert('NY Times articles for ' + self.companyName() +
+          ' could not be loaded at this time');
     });
   }
 
