@@ -1,23 +1,89 @@
-/*-----MODEL-----*/
-
 var locations = [
-  {title: 'Apple', location: {lat:37.331676, lng: -122.030189}},
-  {title: 'AMD', location: {lat:37.385777, lng: -121.998558}},
-  {title: 'Lockheed Martin', location: {lat:37.415918, lng: -122.035878}},
-  {title: 'Hewlett Packard', location: {lat:37.412339, lng: -122.14796}},
-  {title: 'Electronic Arts', location: {lat:37.523279, lng: -122.254144}},
-  {title: 'Cisco', location: {lat:37.408177, lng: -121.928128}},
-  {title: 'Google', location: {lat:37.422, lng: -122.084057}},
-  {title: 'Nvidia', location: {lat:37.370535, lng: -121.966749}},
-  {title: 'Netflix', location: {lat:37.257103, lng: -121.964178}},
-  {title: 'Facebook', location: {lat:37.485071, lng: -122.147424}},
-  {title: 'Oracle', location: {lat:37.532098, lng: -122.263174}},
-  {title: 'Tesla', location: {lat:37.394706, lng: -122.150325}},
-  {title: 'Symantec', location: {lat: 37.398196, lng: -122.054466}},
-  {title: 'Intel', location: {lat: 37.387591, lng: -121.963787}},
-  {title: 'Riverbed Technology', location: {lat:37.397707 , lng: -122.030075}},
-  {title: 'Agilent Technologies', location: {lat:37.324886 , lng: -121.998857}},
-  {title: 'Visa', location: {lat: 37.559252, lng: -122.276365}}
+  {
+    title: 'Apple',
+    location: {lat:37.33182, lng: -122.03118},
+    address: 'Apple Campus, Cupertino, CA 95014'
+  },
+  {
+    title: 'AMD',
+    location: {lat:37.3829254, lng: -121.9703842},
+    address: '2485 Augustine Dr, Santa Clara, CA 95054'
+  },
+  {
+    title: 'Lockheed Martin',
+    location: {lat:37.415918, lng: -122.0358779},
+    address: '1111 Lockheed Martin Way, Sunnyvale, CA 94089'
+  },
+  {
+    title: 'Hewlett Packard',
+    location: {lat:37.3820152, lng: -121.9813847},
+    address: '3333 Scott Blvd, Santa Clara, CA 95054'
+  },
+  {
+    title: 'Electronic Arts',
+    location: {lat:37.5232794, lng: -122.2541438},
+    address: '209 Redwood Shores Pkwy, Redwood City, CA 94065'
+  },
+  {
+    title: 'Cisco',
+    location: {lat:37.4084383, lng: -121.9539644},
+    address: '170 W Tasman Dr, San Jose, CA 95134'
+  },
+  {
+    title: 'Google',
+    location: {lat:37.4218419, lng: -122.0840568},
+    address: '1600 Amphitheatre Pkwy, Mountain View, CA 94043'
+  },
+  {
+    title: 'Nvidia',
+    location: {lat:37.3541, lng: -121.9552},
+    address: '2788 San Tomas Expy, Santa Clara, CA 9505'
+  },
+  {
+    title: 'Netflix',
+    location: {lat:37.259585, lng: -121.962695},
+    address: '100 Winchester Cir, Los Gatos, CA 95032'
+  },
+  {
+    title: 'Facebook',
+    location: {lat:37.484377, lng: -122.148304},
+    address: '1 Hacker Way, Menlo Park, CA 94025'
+  },
+  {
+    title: 'Oracle',
+    location: {lat:37.528581, lng: -122.2646347},
+    address: '100 Oracle Pkwy, Redwood City, CA 94065'
+  },
+  {
+    title: 'Tesla',
+    location: {lat:37.394838, lng: -122.150389},
+    address: '3500 Deer Creek Rd, Palo Alto, CA 94304'
+  },
+  {
+    title: 'Symantec',
+    location: {lat: 37.3981961, lng: -122.0544663},
+    address: '350 Ellis St, Mountain View, CA 94043'
+  },
+  {
+    title: 'Intel',
+    location: {lat: 37.387591, lng: -121.963787},
+    address: '2200 Mission College Blvd, Santa Clara, CA 95054'
+  },
+  {
+    title: 'Riverbed Technology',
+    location: {lat:37.3977072 , lng: -122.0300751},
+    address: '525 Almanor Ave, Sunnyvale, CA 94085'
+  },
+  {
+    title: 'Agilent Technology',
+    location: {lat:37.3248859 , lng: -121.998857},
+    address: '5301 Stevens Creek Blvd, Santa Clara, CA 95051'
+  },
+  {
+    title: 'Visa',
+    location: {lat: 37.4262136, lng: -122.1431343},
+    address: '385 Sherman Ave, Palo Alto, CA 94306'
+  }
 ];
 
 var map;
@@ -36,6 +102,7 @@ var mainInfoWindow;
 
 var drawingManager;
 
+//Initializing the map and core map variables.
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 37.4400972, lng: -121.8339223},
@@ -77,10 +144,10 @@ function initMap() {
 var Company = function(data) {
   this.name = ko.observable(data.title);
   this.location = ko.observable(data.location);
+  this.address = ko.observable(data.address);
 }
 
 
-/*-----VIEWMODEL-----*/
 var ViewModel = function() {
 
   var self = this;
@@ -90,6 +157,8 @@ var ViewModel = function() {
   this.companyName = ko.observable();
 
   this.chosenCompany = ko.observable();
+
+  this.companyAddress = ko.observable();
 
   this.wikiLinks = ko.observableArray([]);
 
@@ -103,32 +172,40 @@ var ViewModel = function() {
 
   this.nytAlert = ko.observable();
 
+  this.showHideCompaniesText = ko.observable('Hide All Companies');
+
   this.drawingModeText = ko.observable('Drawing Mode Off');
 
   locations.forEach(function(companyInfo) {
     self.companyList.push(new Company(companyInfo));
   });
 
+  //Initial loading and populating of all markers as well as making the inital
+  //request for asychronous information on the map's default location.
   this.populateMarkers = function() {
     self.companyName('Silicon Valley');
-    self.getAJAX();
+    self.companyAddress('California, USA')
+    self.sendAJAX();
     bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < locations.length; i++) {
       var position = locations[i].location;
       var title = locations[i].title;
-
+      var address = locations[i].address;
+      //Creating the marker.
       var marker = new google.maps.Marker({
         position: position,
         title: title,
+        address: address,
         animation: null,
         icon: defaultIcon,
         id: i
       });
-
+      //Pushing all markers to the markers list and adding listeners.
       markers.push(marker);
       marker.addListener('click', function() {
         self.companyName(this.title);
-        self.getAJAX();
+        self.companyAddress(this.address);
+        self.sendAJAX();
         for (var i = 0; i < markers.length; i++) {
           markers[i].setAnimation(null);
         }
@@ -150,7 +227,12 @@ var ViewModel = function() {
     map.fitBounds(bounds);
   }
 
+  //Shows all markers on the map and pans out the map view as well as requesting
+  //asynchronous information about the map's location.
   this.showCompanies = function() {
+    self.companyName('Silicon Valley');
+    self.companyAddress('California, USA');
+    self.sendAJAX();
     for (var i = 0; i < markers.length; i++) {
       markers[i].setAnimation(google.maps.Animation.DROP)
       markers[i].setMap(map);
@@ -159,6 +241,7 @@ var ViewModel = function() {
     map.fitBounds(bounds);
   }
 
+  //Hides all map markers.
   this.hideCompanies = function() {
     for (var i = 0; i < markers.length; i++) {
       markers[i].setMap(null);
@@ -166,10 +249,26 @@ var ViewModel = function() {
     }
   }
 
+  //Enables an HTML button to have dual functionality depending on the state
+  //of the map.
+  this.showHideCompanies = function() {
+    if (self.showHideCompaniesText() === 'Show All Companies') {
+      self.showCompanies();
+      self.showHideCompaniesText('Hide All Companies');
+    } else {
+      self.hideCompanies();
+      self.showHideCompaniesText('Show All Companies');
+    }
+  }
+
+  //Shows selected company, zooms, opens infowindow, and updates asynchronous
+  //company information.
   this.showSingleCompany = function() {
     self.companyName(self.chosenCompany().name());
+    self.companyAddress(self.chosenCompany().address());
     this.hideCompanies();
-    self.getAJAX();
+    self.sendAJAX();
+    self.showHideCompaniesText('Show All Companies');
     var mainInfoWindow = new google.maps.InfoWindow();
     for (var i = 0; i < markers.length; i++) {
       if (self.companyName() == markers[i].title) {
@@ -188,6 +287,8 @@ var ViewModel = function() {
     }
   }
 
+
+  //Populates infowindow with company name and streetview.
   this.populateInfoWindow = function(marker, mainInfoWindow) {
     if (mainInfoWindow.marker != marker) {
       mainInfoWindow.setContent('');
@@ -215,6 +316,7 @@ var ViewModel = function() {
             };
           var panorama = new google.maps.StreetViewPanorama(
             document.getElementById('pano'), panoramaOptions);
+          //Error handling if streetview isn't found.
         } else {
           mainInfoWindow.setContent('<div><strong>' + marker.title + '</div></strong>' +
             '<hr>' + '<div>No Streetview found</div>' + '<hr>');
@@ -225,15 +327,19 @@ var ViewModel = function() {
     }
   }
 
+  //Sets the status of polygon drawing search mode to on or off and hides/shows
+  //markers accordingly as well as changes CSS style of drawing mode button.
   this.toggleDrawingTools = function() {
     drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
     if (drawingManager.map) {
-      document.getElementById('drawing-tools').setAttribute('class', 'btn');
+      document.getElementById('drawing-tools').setAttribute('class', 'drawing-btn');
       self.drawingModeText('Drawing Mode Off');
       drawingManager.setMap(null);
       if (polygon) {
         polygon.setMap(null);
       }
+      self.showCompanies();
+      self.showHideCompaniesText('Hide All Companies');
     } else {
       for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
@@ -250,8 +356,10 @@ var ViewModel = function() {
       });
       document.getElementById('drawing-tools').setAttribute('class', 'btn-drawing-mode-on');
       self.drawingModeText('Drawing Mode On');
+      self.showHideCompaniesText('Show All Companies');
     }
   }
+
 
   this.polygonSearch = function() {
     for (var i = 0; i < markers.length; i++) {
@@ -263,10 +371,12 @@ var ViewModel = function() {
     }
   }
 
-  this.getAJAX = function() {
+  //AJAX/JSON requests getting unique results for each selected business asychronously.
+  this.sendAJAX = function() {
     self.wikiLinks([]);
     self.nytLinks([]);
     self.wikiAlert(null);
+    //Shows error message if the request in unsuccessful.
     var wikiRequestTimeout = setTimeout(function() {
       self.wikiAlert(' for ' + self.companyName() + ' could not be loaded at this time');
     }, 5000);
@@ -281,12 +391,14 @@ var ViewModel = function() {
           var title = wikiResults[i];
           var url = 'http://en.wikipedia.org/wiki/' + title.replace(/ /g, "_");
           self.wikiLinks.push({title: title, url: url});
+          //Clears timed error message if request is successful.
           clearTimeout(wikiRequestTimeout);
         }
       }
     });
     var nytURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?q='
-        + self.companyName().replace(/ /g, "%") + '&sort=newest&api-key=544f5bc5e26648598845064157acd780';
+        + self.companyName().replace(/ /g, "%") +
+        '&sort=newest&api-key=544f5bc5e26648598845064157acd780';
     $.getJSON(nytURL, function (data) {
       var nytResults = data.response.docs;
       for (var i = 0; i < nytResults.length; i++) {
@@ -296,25 +408,29 @@ var ViewModel = function() {
         var snippet = article.snippet;
         self.nytLinks.push({headline: headline, url: headlineURL, snippet: snippet});
       };
+      //Shows error message if the request in unsuccessful.
     }).fail(function(e){
-        self.nytAlert(' For ' + self.companyName() + ' Could Not Be Loaded At This Time');
+        self.nytAlert(' for ' + self.companyName() + ' could not be loaded at this time');
     });
   }
 
-this.followWikiLink = function() {
-  if (typeof self.chosenWiki() != 'undefined') {
-    window.open(self.chosenWiki().url);
-  }
-}
 
-this.followNYTLink = function() {
-  if (typeof self.chosenNYT() != 'undefined') {
-    window.open(self.chosenNYT().url);
+  this.followWikiLink = function() {
+    if (typeof self.chosenWiki() != 'undefined') {
+      window.open(self.chosenWiki().url);
+    }
   }
-}
 
+
+  this.followNYTLink = function() {
+    if (typeof self.chosenNYT() != 'undefined') {
+      window.open(self.chosenNYT().url);
+    }
+  }
+
+  //Ensures Google Maps API is loaded before calling the populateMarkers function.
   if (typeof google === 'object' && typeof google.maps === 'object') {
-    self.showCompanies();
+    self.populateMarkers();
   } else {
     setTimeout(self.populateMarkers, 1000);
   }

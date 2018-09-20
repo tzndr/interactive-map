@@ -14,7 +14,9 @@ body {
   position: absolute;
   line-height: 30px;
   width: 23%;
+  height: auto;
   max-width: 250px;
+  min-width: 150px;
   top: 7px;
   left: 1%;
   z-index: 5;
@@ -31,7 +33,7 @@ body {
   padding-left: 10px;
   width: 23%;
   max-width: 250px;
-  top: 33%;
+  top: 7px;
   right: 1%;
   z-index: 5;
   background-color: white;
@@ -55,14 +57,12 @@ body {
   line-height: 2px;
 }
 
-.main-title {
-  margin: 0 0 10px 0;
-  font: bold 20pt helvetica, arial;
-}
-
-.company-title {
-  margin: 10px 0 5px 0;
-  font: bold 24pt georgia, arial;
+#company-info-headline {
+  padding: 5px 0 5px 0;
+  font: bold 18pt georgia, helvetica;
+  width: 90%;
+  height: auto;
+  margin: auto;
 }
 
 .subheading-text {
@@ -72,11 +72,6 @@ body {
 
 .heading-text {
   margin: 10px 0 0 0;
-  text-align: center;
-}
-
-.second-line-text {
-  margin: auto;
   text-align: center;
 }
 
@@ -98,25 +93,131 @@ body {
 }
 
 .btn {
-  width: 65%;
+  width: 80%;
   font: 10pt helvetica, arial;
   background-color: #FFC300;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: 3px;
+}
+
+.drawing-btn {
+  width: 80%;
+  font: 10pt helvetica, arial;
+  color: white;
+  background-color: #D4452C;
+  padding: 4px;
+  border-radius: 3px;
 }
 
 .btn-drawing-mode-on {
-  width: 65%;
+  width: 80%;
   font: 10pt helvetica, arial;
   background-color: #67B541;
   color: white;
   padding: 4px;
+  border-radius: 3px;
 }
 
 option {
   text-align: center;
 }
 
-hr {
+.panel-hr {
   width: 90%;
+}
+
+.box-shadow {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.7),
+              0 12px 40px 0 rgba(0, 0, 0, 0.6);
+}
+
+.address {
+  font: bold 10pt helvetica, arial;
+  width: 90%;
+  margin: auto;
+}
+
+@media screen and (max-width: 485px) {
+  #floating-panel-main {
+    position: absolute;
+    line-height: 30px;
+    width: 20%;
+    height: auto;
+    top: 0px;
+    left: 0px;
+    z-index: 5;
+    background-color: white;
+    padding: 0 0 10px 0;
+    border: 1px solid #464343;
+    border-radius: 3px;
+    text-align: center;
+  }
+
+  .link-text {
+    margin: 0 0 10px 0;
+    line-height: 2px;
+    font-size: 8pt;
+  }
+
+  #company-info-headline {
+    padding: 10px 0 5px 0;
+    font: bold 12pt georgia, helvetica;
+    width: 90%;
+    margin: auto;
+  }
+
+  #company-list,
+  #company-info-wiki,
+  #company-info-nytimes {
+    width: 90%;
+    font: 8pt helvetica, arial;
+    margin: 0 0 10px 0;
+  }
+
+  .btn {
+    width: 80%;
+    font: 8pt helvetica, arial;
+    background-color: #FFC300;
+    padding: 4px;
+    border-radius: 3px;
+  }
+
+  .drawing-btn {
+    width: 80%;
+    font: 8pt helvetica, arial;
+    color: white;
+    background-color: #D4452C;
+    padding: 4px;
+    border-radius: 3px;
+  }
+
+  .btn-drawing-mode-on {
+    width: 80%;
+    font: 8pt helvetica, arial;
+    background-color: #67B541;
+    color: white;
+    padding: 4px;
+    border-radius: 3px;
+  }
+
+  .address {
+    font: bold 6pt helvetica, arial;
+    width: 90%;
+    margin: auto;
+  }
+
+  .heading-text {
+    margin: auto;
+    font: 10pt helvetica, arial;
+  }
+
+  .subheading-text {
+    margin: 0 0 10px 0;
+    font: 10pt helvetica, arial;
+  }
+
+  .news-img {
+    width: 75%;
+    margin: 5px 0 0 0;
+  }
 }
