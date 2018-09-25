@@ -7,26 +7,35 @@
   </head>
   <body>
     <div id="map"></div>
-    <div id="floating-panel-main" class="box-shadow">
-      <img class="main-img" src="img/siliconvalley.jpeg">
-      <button id="show-companies"
-              class="btn"
-              data-bind="click: showHideCompanies, text: showHideCompaniesText">
-      </button>
-      <button id="drawing-tools"
-              class="drawing-btn"
-              data-bind="click: toggleDrawingTools, text: drawingModeText">
-      </button>
-      <hr class="panel-hr">
-      <span class="heading-text">Select a Company</span>
+    <button class="hide-panel-btn"
+            data-bind="click: togglePanel, text: showHidePanelText"></button>
+    <button id="show-companies"
+            class="show-companies-btn"
+            data-bind="click: showHideCompanies, text: showHideCompaniesText">
+    </button>
+    <button id="drawing-tools"
+            class="drawing-btn"
+            data-bind="click: toggleDrawingTools, text: drawingModeText">
+    </button>
+    <div class="company-list-container">
       <select id="company-list"
+              class="company-list"
               data-bind="options: companyList,
                          optionsText: 'name',
                          value: chosenCompany,
-                         optionsCaption: 'Select...',
+                         optionsCaption: 'Company Detail',
                          event: {change: showSingleCompany}">
       </select>
+    </div>
+    <div id="floating-panel-main" class="box-shadow" data-bind="visible: showHideMainPanel">
+      <img class="main-img" src="img/siliconvalley.jpeg">
       <hr class="panel-hr">
+      <input class="search-field" placeholder="Search for a Company"></input>
+      <div data-bind="forEach: companyList">
+        <p data-bind="text: name"></p>
+      </div>
+    </div>
+    <div id="floating-panel-info" class="info-box box-shadow" data-bind="visible: showHideInfoPanel">
       <div id="company-info-headline" data-bind="text: companyName">
       </div>
       <h2 class="subheading-text">Information</h2>

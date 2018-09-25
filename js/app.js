@@ -142,9 +142,9 @@ function initMap() {
 }
 
 var Company = function(data) {
-  this.name = ko.observable(data.title);
-  this.location = ko.observable(data.location);
-  this.address = ko.observable(data.address);
+  this.name = data.title;
+  this.location = data.location;
+  this.address = data.address;
 }
 
 
@@ -172,9 +172,17 @@ var ViewModel = function() {
 
   this.drawingModeText = ko.observable('Drawing Mode Off');
 
+  this.showHideMainPanel = ko.observable(true);
+
+  this.showHideInfoPanel = ko.observable(false);
+
+  this.showHidePanelText = ko.observable('Hide Panel');
+
   locations.forEach(function(companyInfo) {
     self.companyList.push(new Company(companyInfo));
   });
+
+  console.log(this.companyList());
 
   //Initial loading and populating of all markers as well as making the inital
   //request for asychronous information on the map's default location.
@@ -202,6 +210,10 @@ var ViewModel = function() {
         self.companyName(this.title);
         self.companyAddress(this.address);
         self.sendAJAX();
+        if (self.showHideInfoPanel != true && self.showHidePanelText() != 'Show Panel') {
+          self.showHideInfoPanel(true);
+          self.showHideMainPanel(false);
+        }
         for (var i = 0; i < markers.length; i++) {
           markers[i].setAnimation(null);
         }
@@ -229,6 +241,10 @@ var ViewModel = function() {
     self.companyName('Silicon Valley');
     self.companyAddress('California, USA');
     self.sendAJAX();
+    self.showHideInfoPanel(false);
+    if (self.showHideMainPanel() === false && self.showHidePanelText() === 'Hide Panel') {
+      self.showHideMainPanel(true);
+    }
     for (var i = 0; i < markers.length; i++) {
       markers[i].setAnimation(google.maps.Animation.DROP)
       markers[i].setMap(map);
@@ -265,6 +281,8 @@ var ViewModel = function() {
     this.hideCompanies();
     self.sendAJAX();
     self.showHideCompaniesText('Show All Companies');
+    self.showHideInfoPanel(true);
+    self.showHidePanelText('Hide Panel');
     var mainInfoWindow = new google.maps.InfoWindow();
     for (var i = 0; i < markers.length; i++) {
       if (self.companyName() == markers[i].title) {
@@ -292,6 +310,13 @@ var ViewModel = function() {
       mainInfoWindow.addListener('closeclick', function() {
         mainInfoWindow.marker = null;
         marker.setAnimation(null);
+        if (self.showHidePanelText() === 'Hide Panel') {
+          self.showHideMainPanel(true);
+          self.showHideInfoPanel(false);
+        }
+        else if (self.showHidePanelText == 'Show Panel') {
+          self.showHideInfoPanel(false);
+        }
       });
       var streetViewService = new google.maps.StreetViewService();
       var radius = 125;
@@ -370,6 +395,7 @@ var ViewModel = function() {
   //AJAX/JSON requests getting unique results for each selected business asychronously.
   this.sendAJAX = function() {
     self.wikiLinks([]);
+    self.nytLinks([]);
     //Shows error message if the request in unsuccessful.
     var wikiRequestTimeout = setTimeout(function() {
       alert('Wikipedia links for ' + self.companyName() + ' could not be loaded at this time');
@@ -420,6 +446,28 @@ var ViewModel = function() {
   this.followNYTLink = function() {
     if (typeof self.chosenNYT() != 'undefined') {
       window.open(self.chosenNYT().url);
+    }
+  }
+
+
+  this.togglePanel = function() {
+    if (self.showHidePanelText() === 'Hide Panel') {
+      self.showHideMainPanel(false);
+      self.showHideInfoPanel(false);
+      self.showHidePanelText('Show Panel');
+    }
+    else if (self.companyName() != 'Silicon Valley' && self.showHidePanelText() === 'Show Panel') {
+      self.showHideInfoPanel(true);
+      self.showHideMainPanel(false);
+      self.showHidePanelText('Hide Panel');
+    }
+    else if (self.companyName() === 'Silicon Valley' && self.showHidePanelText() === 'Show Panel') {
+      self.showHideMainPanel(true);
+      self.showHideInfoPanel(false);
+      self.showHidePanelText('Hide Panel');
+    } else {
+      self.showHideMainPanel(true);
+      self.showHidePanelText('Hide Panel');
     }
   }
 

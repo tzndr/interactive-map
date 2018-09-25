@@ -13,12 +13,11 @@ body {
 #floating-panel-main {
   position: absolute;
   line-height: 30px;
-  width: 23%;
+  width: 13%;
   height: auto;
-  max-width: 250px;
   min-width: 150px;
-  top: 7px;
-  left: 1%;
+  top: 40px;
+  left: 8px;
   z-index: 5;
   background-color: white;
   padding: 0 0 10px 0;
@@ -27,14 +26,15 @@ body {
   text-align: center;
 }
 
-#floating-panel-info {
+.info-box {
   position: absolute;
   line-height: 30px;
-  padding-left: 10px;
   width: 23%;
+  height: auto;
   max-width: 250px;
-  top: 7px;
-  right: 1%;
+  min-width: 150px;
+  top: 30px;
+  left: 8px;
   z-index: 5;
   background-color: white;
   padding: 0 0 10px 0;
@@ -80,7 +80,26 @@ body {
   height: 200px;
 }
 
-#company-list,
+.company-list-container {
+  background-color: #F6CD0E;
+  padding: 1px 0 4px 0;
+  border-radius: 0 0 6px 6px;
+  position: absolute;
+  top: 1px;
+  right: 207px;
+  z-index: 5;
+  text-align: center;
+}
+
+.company-list {
+  background-color: #F6CD0E;
+  margin: 0;
+  text-align: center;
+  border: 0px;
+  outline: none;
+  cursor: pointer;
+}
+
 #company-info-wiki,
 #company-info-nytimes {
   width: 90%;
@@ -92,30 +111,62 @@ body {
   outline: none;
 }
 
-.btn {
-  width: 80%;
-  font: 10pt helvetica, arial;
-  background-color: #FFC300;
-  padding: 4px;
-  border-radius: 3px;
+.hide-panel-btn {
+  font: 8pt helvetica, arial;
+  background-color: #F6CD0E;
+  color: black;
+  padding: 5px 0;
+  border-radius: 0 0 6px 6px;
+  position: absolute;
+  width: 100px;
+  top: 0;
+  left: 8px;
+  z-index: 5;
+  outline: none;
+  cursor: pointer;
+}
+
+.show-companies-btn {
+  font: 8pt helvetica, arial;
+  background-color: #F6CD0E;
+  color: black;
+  padding: 5px 0;
+  border-radius: 0 0 6px 6px;
+  position: absolute;
+  width: 125px;
+  top: 0;
+  right: 345px;
+  z-index: 5;
+  outline: none;
+  cursor: pointer;
 }
 
 .drawing-btn {
-  width: 80%;
-  font: 10pt helvetica, arial;
+  font: 8pt helvetica, arial;
+  background-color: #DF4C4C;
   color: white;
-  background-color: #D4452C;
-  padding: 4px;
-  border-radius: 3px;
+  padding: 5px 0;
+  border-radius: 0 0 6px 6px;
+  position: absolute;
+  width: 125px;
+  top: 0;
+  right: 75px;
+  z-index: 5;
+  cursor: pointer;
 }
 
 .btn-drawing-mode-on {
-  width: 80%;
-  font: 10pt helvetica, arial;
-  background-color: #67B541;
+  font: 8pt helvetica, arial;
+  background-color: #40CE53;
   color: white;
-  padding: 4px;
-  border-radius: 3px;
+  padding: 5px 0;
+  border-radius: 0 0 6px 6px;
+  position: absolute;
+  width: 125px;
+  top: 0;
+  right: 75px;
+  z-index: 5;
+  cursor: pointer;
 }
 
 option {
@@ -137,14 +188,30 @@ option {
   margin: auto;
 }
 
+.search-field {
+  margin: auto;
+  text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 @media screen and (max-width: 485px) {
   #floating-panel-main {
     position: absolute;
     line-height: 30px;
     width: 20%;
     height: auto;
-    top: 0px;
-    left: 0px;
+    top: 30px;
+    left: 8px;
     z-index: 5;
     background-color: white;
     padding: 0 0 10px 0;
@@ -174,7 +241,7 @@ option {
     margin: 0 0 10px 0;
   }
 
-  .btn {
+  .show-companies-btn {
     width: 80%;
     font: 8pt helvetica, arial;
     background-color: #FFC300;
