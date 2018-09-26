@@ -2,87 +2,104 @@ var locations = [
   {
     title: 'Apple',
     location: {lat:37.33182, lng: -122.03118},
-    address: 'Apple Campus, Cupertino, CA 95014'
+    address: 'Apple Campus, Cupertino, CA 95014',
+    category: 'Computers'
   },
   {
     title: 'AMD',
     location: {lat:37.3829254, lng: -121.9703842},
-    address: '2485 Augustine Dr, Santa Clara, CA 95054'
+    address: '2485 Augustine Dr, Santa Clara, CA 95054',
+    category: 'Computers'
   },
   {
     title: 'Lockheed Martin',
     location: {lat:37.415918, lng: -122.0358779},
-    address: '1111 Lockheed Martin Way, Sunnyvale, CA 94089'
+    address: '1111 Lockheed Martin Way, Sunnyvale, CA 94089',
+    category: 'Military'
   },
   {
     title: 'Hewlett Packard',
     location: {lat:37.3820152, lng: -121.9813847},
-    address: '3333 Scott Blvd, Santa Clara, CA 95054'
+    address: '3333 Scott Blvd, Santa Clara, CA 95054',
+    category: 'Computers'
   },
   {
     title: 'Electronic Arts',
     location: {lat:37.5232794, lng: -122.2541438},
-    address: '209 Redwood Shores Pkwy, Redwood City, CA 94065'
+    address: '209 Redwood Shores Pkwy, Redwood City, CA 94065',
+    category: 'Games'
   },
   {
     title: 'Cisco',
     location: {lat:37.4084383, lng: -121.9539644},
-    address: '170 W Tasman Dr, San Jose, CA 95134'
+    address: '170 W Tasman Dr, San Jose, CA 95134',
+    category: 'IT'
   },
   {
     title: 'Google',
     location: {lat:37.4218419, lng: -122.0840568},
-    address: '1600 Amphitheatre Pkwy, Mountain View, CA 94043'
+    address: '1600 Amphitheatre Pkwy, Mountain View, CA 94043',
+    category: 'Internet'
   },
   {
     title: 'Nvidia',
     location: {lat:37.3541, lng: -121.9552},
-    address: '2788 San Tomas Expy, Santa Clara, CA 9505'
+    address: '2788 San Tomas Expy, Santa Clara, CA 9505',
+    category: 'Computers'
   },
   {
     title: 'Netflix',
     location: {lat:37.259585, lng: -121.962695},
-    address: '100 Winchester Cir, Los Gatos, CA 95032'
+    address: '100 Winchester Cir, Los Gatos, CA 95032',
+    category: 'Entertainment'
   },
   {
     title: 'Facebook',
     location: {lat:37.484377, lng: -122.148304},
-    address: '1 Hacker Way, Menlo Park, CA 94025'
+    address: '1 Hacker Way, Menlo Park, CA 94025',
+    category: 'Internet'
   },
   {
     title: 'Oracle',
     location: {lat:37.528581, lng: -122.2646347},
-    address: '100 Oracle Pkwy, Redwood City, CA 94065'
+    address: '100 Oracle Pkwy, Redwood City, CA 94065',
+    category: 'IT'
   },
   {
     title: 'Tesla',
     location: {lat:37.394838, lng: -122.150389},
-    address: '3500 Deer Creek Rd, Palo Alto, CA 94304'
+    address: '3500 Deer Creek Rd, Palo Alto, CA 94304',
+    category: 'Transportation'
   },
   {
     title: 'Symantec',
     location: {lat: 37.3981961, lng: -122.0544663},
-    address: '350 Ellis St, Mountain View, CA 94043'
+    address: '350 Ellis St, Mountain View, CA 94043',
+    category: 'Computers'
   },
   {
     title: 'Intel',
     location: {lat: 37.387591, lng: -121.963787},
-    address: '2200 Mission College Blvd, Santa Clara, CA 95054'
+    address: '2200 Mission College Blvd, Santa Clara, CA 95054',
+    category: 'Computers'
   },
   {
     title: 'Riverbed Technology',
     location: {lat:37.3977072 , lng: -122.0300751},
-    address: '525 Almanor Ave, Sunnyvale, CA 94085'
+    address: '525 Almanor Ave, Sunnyvale, CA 94085',
+    category: 'IT'
   },
   {
     title: 'Agilent Technology',
     location: {lat:37.3248859 , lng: -121.998857},
-    address: '5301 Stevens Creek Blvd, Santa Clara, CA 95051'
+    address: '5301 Stevens Creek Blvd, Santa Clara, CA 95051',
+    category: 'Science'
   },
   {
     title: 'Visa',
     location: {lat: 37.4262136, lng: -122.1431343},
-    address: '385 Sherman Ave, Palo Alto, CA 94306'
+    address: '385 Sherman Ave, Palo Alto, CA 94306',
+    category: 'Payments'
   }
 ];
 
@@ -145,6 +162,7 @@ var Company = function(data) {
   this.name = data.title;
   this.location = data.location;
   this.address = data.address;
+  this.category = data.category;
 }
 
 
@@ -174,16 +192,33 @@ var ViewModel = function() {
 
   this.showHideMainPanel = ko.observable(true);
 
-  this.showHideInfoPanel = ko.observable(false);
+  this.showHideInfoPanel = ko.observable(true);
 
-  this.showHidePanelText = ko.observable('Hide Panel');
+  this.showHidePanelText = ko.observable('Hide Panels');
+
+  this.chosenCategory = ko.observable(false);
+
+  this.panelSelection = ko.observable();
+
+  this.panelCompanyList = ko.observableArray([]);
+
+  this.categories = ko.observableArray([
+    'All',
+    'Computers',
+    'Military',
+    'Games',
+    'IT',
+    'Internet',
+    'Entertainment',
+    'Transportation',
+    'Science',
+    'Payments'
+  ]);
 
   locations.forEach(function(companyInfo) {
     self.companyList.push(new Company(companyInfo));
+    self.panelCompanyList.push(new Company(companyInfo));
   });
-
-  console.log(this.companyList());
-
   //Initial loading and populating of all markers as well as making the inital
   //request for asychronous information on the map's default location.
   this.populateMarkers = function() {
@@ -210,9 +245,8 @@ var ViewModel = function() {
         self.companyName(this.title);
         self.companyAddress(this.address);
         self.sendAJAX();
-        if (self.showHideInfoPanel != true && self.showHidePanelText() != 'Show Panel') {
+        if (self.showHidePanelText() != 'Show Panels') {
           self.showHideInfoPanel(true);
-          self.showHideMainPanel(false);
         }
         for (var i = 0; i < markers.length; i++) {
           markers[i].setAnimation(null);
@@ -234,16 +268,16 @@ var ViewModel = function() {
     }
     map.fitBounds(bounds);
   }
-
   //Shows all markers on the map and pans out the map view as well as requesting
   //asynchronous information about the map's location.
   this.showCompanies = function() {
     self.companyName('Silicon Valley');
     self.companyAddress('California, USA');
     self.sendAJAX();
-    self.showHideInfoPanel(false);
-    if (self.showHideMainPanel() === false && self.showHidePanelText() === 'Hide Panel') {
-      self.showHideMainPanel(true);
+    if (self.showHidePanelText() === 'Show Panels') {
+      self.showHideInfoPanel(false);
+    } else {
+      self.showHideInfoPanel(true);
     }
     for (var i = 0; i < markers.length; i++) {
       markers[i].setAnimation(google.maps.Animation.DROP)
@@ -252,7 +286,6 @@ var ViewModel = function() {
     }
     map.fitBounds(bounds);
   }
-
   //Hides all map markers.
   this.hideCompanies = function() {
     for (var i = 0; i < markers.length; i++) {
@@ -260,7 +293,6 @@ var ViewModel = function() {
       markers[i].setAnimation(google.maps.Animation.DROP);
     }
   }
-
   //Enables an HTML button to have dual functionality depending on the state
   //of the map.
   this.showHideCompanies = function() {
@@ -272,20 +304,20 @@ var ViewModel = function() {
       self.showHideCompaniesText('Show All Companies');
     }
   }
-
   //Shows selected company, zooms, opens infowindow, and updates asynchronous
   //company information.
   this.showSingleCompany = function() {
-    self.companyName(self.chosenCompany().name());
-    self.companyAddress(self.chosenCompany().address());
+    self.companyName(self.chosenCompany().name);
+    self.companyAddress(self.chosenCompany().address);
     this.hideCompanies();
     self.sendAJAX();
     self.showHideCompaniesText('Show All Companies');
-    self.showHideInfoPanel(true);
-    self.showHidePanelText('Hide Panel');
+    if (self.showHidePanelText() === 'Hide Panels') {
+      self.showHideInfoPanel(true);
+    }
     var mainInfoWindow = new google.maps.InfoWindow();
     for (var i = 0; i < markers.length; i++) {
-      if (self.companyName() == markers[i].title) {
+      if (self.companyName() === markers[i].title) {
         markers[i].setAnimation(google.maps.Animation.BOUNCE);
         markers[i].setMap(map);
         map.panTo(markers[i].position);
@@ -300,8 +332,6 @@ var ViewModel = function() {
       }
     }
   }
-
-
   //Populates infowindow with company name and streetview.
   this.populateInfoWindow = function(marker, mainInfoWindow) {
     if (mainInfoWindow.marker != marker) {
@@ -310,13 +340,6 @@ var ViewModel = function() {
       mainInfoWindow.addListener('closeclick', function() {
         mainInfoWindow.marker = null;
         marker.setAnimation(null);
-        if (self.showHidePanelText() === 'Hide Panel') {
-          self.showHideMainPanel(true);
-          self.showHideInfoPanel(false);
-        }
-        else if (self.showHidePanelText == 'Show Panel') {
-          self.showHideInfoPanel(false);
-        }
       });
       var streetViewService = new google.maps.StreetViewService();
       var radius = 125;
@@ -366,6 +389,7 @@ var ViewModel = function() {
         markers[i].setMap(null);
         markers[i].setAnimation(google.maps.Animation.DROP);
       }
+      self.showHideInfoPanel(false);
       drawingManager.setMap(map);
       drawingManager.addListener('overlaycomplete', function(event) {
         drawingManager.setDrawingMode(null);
@@ -380,7 +404,6 @@ var ViewModel = function() {
       self.showHideCompaniesText('Show All Companies');
     }
   }
-
 
   this.polygonSearch = function() {
     for (var i = 0; i < markers.length; i++) {
@@ -435,13 +458,11 @@ var ViewModel = function() {
     });
   }
 
-
   this.followWikiLink = function() {
     if (typeof self.chosenWiki() != 'undefined') {
       window.open(self.chosenWiki().url);
     }
   }
-
 
   this.followNYTLink = function() {
     if (typeof self.chosenNYT() != 'undefined') {
@@ -449,28 +470,44 @@ var ViewModel = function() {
     }
   }
 
-
   this.togglePanel = function() {
-    if (self.showHidePanelText() === 'Hide Panel') {
+    if (self.showHidePanelText() === 'Hide Panels') {
       self.showHideMainPanel(false);
       self.showHideInfoPanel(false);
-      self.showHidePanelText('Show Panel');
-    }
-    else if (self.companyName() != 'Silicon Valley' && self.showHidePanelText() === 'Show Panel') {
-      self.showHideInfoPanel(true);
-      self.showHideMainPanel(false);
-      self.showHidePanelText('Hide Panel');
-    }
-    else if (self.companyName() === 'Silicon Valley' && self.showHidePanelText() === 'Show Panel') {
-      self.showHideMainPanel(true);
-      self.showHideInfoPanel(false);
-      self.showHidePanelText('Hide Panel');
+      self.showHidePanelText('Show Panels');
     } else {
       self.showHideMainPanel(true);
-      self.showHidePanelText('Hide Panel');
+      self.showHideInfoPanel(true);
+      self.showHidePanelText('Hide Panels');
     }
   }
 
+  this.categorySearch = function() {
+    self.panelCompanyList([]);
+    for (var i = 0; i < self.companyList().length; i++) {
+      var company = self.companyList()[i];
+      if (company.category === self.chosenCategory()) {
+        self.panelCompanyList.push(company);
+        for (var x = 0; x < markers.length; x++) {
+          var marker = markers[x];
+          marker.setMap(null);
+          marker.setAnimation(google.maps.Animation.DROP);
+          for (var j = 0; j < self.panelCompanyList().length; j++) {
+            var filteredCompanies = self.panelCompanyList()[j];
+            if (filteredCompanies.name === markers[x].title) {
+              marker.setMap(map);
+            }
+          }
+        }
+      } else if (self.chosenCategory() === 'All') {
+        self.panelCompanyList.push(company);
+        for (var x = 0; x < markers.length; x++) {
+          markers[x].setAnimation(google.maps.Animation.DROP);
+          markers[x].setMap(map);
+        }
+      }
+    }
+  }
   //Ensures Google Maps API is loaded before calling the populateMarkers function.
   if (typeof google === 'object' && typeof google.maps === 'object') {
     self.populateMarkers();

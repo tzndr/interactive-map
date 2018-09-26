@@ -23,21 +23,28 @@
               data-bind="options: companyList,
                          optionsText: 'name',
                          value: chosenCompany,
-                         optionsCaption: 'Company Detail',
+                         optionsCaption: 'Company Zoom',
                          event: {change: showSingleCompany}">
       </select>
     </div>
-    <div id="floating-panel-main" class="box-shadow" data-bind="visible: showHideMainPanel">
+    <div id="floating-panel-main" class="box-shadow"
+         data-bind="visible: showHideMainPanel">
       <img class="main-img" src="img/siliconvalley.jpeg">
+      <p class="panel-filter-text">Filter by Category</p>
+      <select id="category-selection"
+              class="search-field"
+              data-bind="options: categories,
+                         value: chosenCategory,
+                         event: {change: categorySearch}">
+      </select>
       <hr class="panel-hr">
-      <input class="search-field" placeholder="Search for a Company"></input>
-      <div data-bind="forEach: companyList">
-        <p data-bind="text: name"></p>
-      </div>
+      <ul class="panel-list" data-bind="foreach: panelCompanyList">
+        <li class="panel-list-item" data-bind="text: name"></li>
+      </ul>
     </div>
-    <div id="floating-panel-info" class="info-box box-shadow" data-bind="visible: showHideInfoPanel">
-      <div id="company-info-headline" data-bind="text: companyName">
-      </div>
+    <div id="floating-panel-info" class="info-box box-shadow"
+         data-bind="visible: showHideInfoPanel">
+      <div id="company-info-headline" data-bind="text: companyName"></div>
       <h2 class="subheading-text">Information</h2>
       <hr class="panel-hr">
       <div data-bind="text: companyAddress" class="address"></div>
@@ -55,7 +62,7 @@
       </select>
       <hr class="panel-hr">
       <div>
-        <img class="news-img"src="img/nytlogo.png">
+        <a href="http://developer.nytimes.com"><img class="news-img" src="img/nytlogo.png"></a>
         <p class="link-text">Articles</p>
       </div>
       <select id="company-info-nytimes"

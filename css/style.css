@@ -20,26 +20,25 @@ body {
   left: 8px;
   z-index: 5;
   background-color: white;
-  padding: 0 0 10px 0;
+  padding: 0;
   border: 1px solid #464343;
-  border-radius: 3px;
+  border-radius: 10px;
   text-align: center;
 }
 
 .info-box {
   position: absolute;
   line-height: 30px;
-  width: 23%;
+  width: 13%;
   height: auto;
-  max-width: 250px;
   min-width: 150px;
-  top: 30px;
-  left: 8px;
+  top: 40px;
+  right: 8px;
   z-index: 5;
   background-color: white;
-  padding: 0 0 10px 0;
+  padding: 0 5px 10px 5px;
   border: 1px solid #464343;
-  border-radius: 3px;
+  border-radius: 10px;
   text-align: center;
 }
 
@@ -50,6 +49,7 @@ body {
 
 .main-img {
   width: 100%;
+  border-radius: 10px 10px 0 0;
 }
 
 .link-text {
@@ -191,6 +191,24 @@ option {
 .search-field {
   margin: auto;
   text-align: center;
+}
+
+.panel-list {
+  list-style: none;
+  padding: 0;
+  font: 11pt helvetica, arial;
+}
+
+.panel-list-item {
+  margin: 0;
+  font: bold 11pt helvetica, arial;
+  text-align: center;
+  padding: 3px 2px;
+}
+
+.panel-filter-text {
+  font: 10pt helvetica, arial;
+  margin: 0;
 }
 
 
