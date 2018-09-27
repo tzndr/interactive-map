@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <title>Silicon Valley Interactive Map</title>
   </head>
   <body>
-    <div id="map"></div>
+    <div id="map" class="map-canvas"></div>
     <button class="hide-panel-btn"
             data-bind="click: togglePanel, text: showHidePanelText"></button>
     <button id="show-companies"
@@ -17,19 +18,9 @@
             class="drawing-btn"
             data-bind="click: toggleDrawingTools, text: drawingModeText">
     </button>
-    <div class="company-list-container">
-      <select id="company-list"
-              class="company-list"
-              data-bind="options: companyList,
-                         optionsText: 'name',
-                         value: chosenCompany,
-                         optionsCaption: 'Company Zoom',
-                         event: {change: showSingleCompany}">
-      </select>
-    </div>
-    <div id="floating-panel-main" class="box-shadow"
+    <div id="floating-panel-main" class="main-panel box-shadow"
          data-bind="visible: showHideMainPanel">
-      <img class="main-img" src="img/siliconvalley.jpeg">
+      <img class="main-img" src="img/siliconvalley.jpeg" alt="Silicon Valley Banner">
       <p class="panel-filter-text">Filter by Category</p>
       <select id="category-selection"
               class="search-field"
@@ -39,21 +30,20 @@
       </select>
       <hr class="panel-hr">
       <ul class="panel-list" data-bind="foreach: panelCompanyList">
-        <li class="panel-list-item" data-bind="text: name"></li>
+        <li id="panel-company" class="panel-list-item" data-bind="text: name, click: $parent.panelCompanySelection">
       </ul>
     </div>
-    <div id="floating-panel-info" class="info-box box-shadow"
+    <div id="floating-panel-info" class="info-panel box-shadow"
          data-bind="visible: showHideInfoPanel">
-      <div id="company-info-headline" data-bind="text: companyName"></div>
-      <h2 class="subheading-text">Information</h2>
+      <img class="company-logo" data-bind="attr: {src: companyLogo}" alt="Company Logo">
       <hr class="panel-hr">
       <div data-bind="text: companyAddress" class="address"></div>
       <hr class="panel-hr">
       <div>
-        <img class="news-img" src="img/wikilogo.png">
+        <img class="news-img" src="img/wikilogo.png" alt="Wikipedia Logo">
         <p class="link-text">Links</p>
       </div>
-      <select id="company-info-wiki"
+      <select id="company-info-wiki" class="article-dropdown"
               data-bind="options: wikiLinks,
                          optionsText: 'title',
                          value: chosenWiki,
@@ -62,23 +52,28 @@
       </select>
       <hr class="panel-hr">
       <div>
-        <a href="http://developer.nytimes.com"><img class="news-img" src="img/nytlogo.png"></a>
+        <a href="http://developer.nytimes.com"><img class="news-img" src="img/nytlogo.png"
+           alt="NYT Logo"></a>
         <p class="link-text">Articles</p>
       </div>
-      <select id="company-info-nytimes"
+      <select id="company-info-nytimes" class="article-dropdown"
               data-bind="options: nytLinks,
                          optionsText: 'headline',
                          value: chosenNYT,
                          optionsCaption: 'Select...',
                          event: {change: followNYTLink}">
       </select>
+      <hr class="panel-hr" data-bind="visible: zoomButtonStatus">
+      <button class="zoom-pan-btn" data-bind="click: showSingleCompany, visible: zoomButtonStatus, text: zoomButtonText"></button>
     </div>
-    <script async defer
-        src=
-        "https://maps.googleapis.com/maps/api/js?key=AIzaSyD2TAmyKPBNc2JHtEjaEtIezSSSg6_R4zk&libraries=places,drawing,geometry&v=3&callback=initMap">
-    </script>
     <script src="js/libs/knockout-3.2.0.js"></script>"
     <script src="js/libs/jquery.min.js"></script>
+    <script src="js/locations.js"></script>
     <script src="js/app.js"></script>
+    <script async defer
+        src=
+        "https://maps.googleapis.com/maps/api/js?key=AIzaSyD2TAmyKPBNc2JHtEjaEtIezSSSg6_R4zk&libraries=places,drawing,geometry&v=3&callback=initMap"
+        onerror="googleMapsFail()">
+    </script>
   </body>
 </html>

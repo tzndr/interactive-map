@@ -1,108 +1,7 @@
-var locations = [
-  {
-    title: 'Apple',
-    location: {lat:37.33182, lng: -122.03118},
-    address: 'Apple Campus, Cupertino, CA 95014',
-    category: 'Computers'
-  },
-  {
-    title: 'AMD',
-    location: {lat:37.3829254, lng: -121.9703842},
-    address: '2485 Augustine Dr, Santa Clara, CA 95054',
-    category: 'Computers'
-  },
-  {
-    title: 'Lockheed Martin',
-    location: {lat:37.415918, lng: -122.0358779},
-    address: '1111 Lockheed Martin Way, Sunnyvale, CA 94089',
-    category: 'Military'
-  },
-  {
-    title: 'Hewlett Packard',
-    location: {lat:37.3820152, lng: -121.9813847},
-    address: '3333 Scott Blvd, Santa Clara, CA 95054',
-    category: 'Computers'
-  },
-  {
-    title: 'Electronic Arts',
-    location: {lat:37.5232794, lng: -122.2541438},
-    address: '209 Redwood Shores Pkwy, Redwood City, CA 94065',
-    category: 'Games'
-  },
-  {
-    title: 'Cisco',
-    location: {lat:37.4084383, lng: -121.9539644},
-    address: '170 W Tasman Dr, San Jose, CA 95134',
-    category: 'IT'
-  },
-  {
-    title: 'Google',
-    location: {lat:37.4218419, lng: -122.0840568},
-    address: '1600 Amphitheatre Pkwy, Mountain View, CA 94043',
-    category: 'Internet'
-  },
-  {
-    title: 'Nvidia',
-    location: {lat:37.3541, lng: -121.9552},
-    address: '2788 San Tomas Expy, Santa Clara, CA 9505',
-    category: 'Computers'
-  },
-  {
-    title: 'Netflix',
-    location: {lat:37.259585, lng: -121.962695},
-    address: '100 Winchester Cir, Los Gatos, CA 95032',
-    category: 'Entertainment'
-  },
-  {
-    title: 'Facebook',
-    location: {lat:37.484377, lng: -122.148304},
-    address: '1 Hacker Way, Menlo Park, CA 94025',
-    category: 'Internet'
-  },
-  {
-    title: 'Oracle',
-    location: {lat:37.528581, lng: -122.2646347},
-    address: '100 Oracle Pkwy, Redwood City, CA 94065',
-    category: 'IT'
-  },
-  {
-    title: 'Tesla',
-    location: {lat:37.394838, lng: -122.150389},
-    address: '3500 Deer Creek Rd, Palo Alto, CA 94304',
-    category: 'Transportation'
-  },
-  {
-    title: 'Symantec',
-    location: {lat: 37.3981961, lng: -122.0544663},
-    address: '350 Ellis St, Mountain View, CA 94043',
-    category: 'Computers'
-  },
-  {
-    title: 'Intel',
-    location: {lat: 37.387591, lng: -121.963787},
-    address: '2200 Mission College Blvd, Santa Clara, CA 95054',
-    category: 'Computers'
-  },
-  {
-    title: 'Riverbed Technology',
-    location: {lat:37.3977072 , lng: -122.0300751},
-    address: '525 Almanor Ave, Sunnyvale, CA 94085',
-    category: 'IT'
-  },
-  {
-    title: 'Agilent Technology',
-    location: {lat:37.3248859 , lng: -121.998857},
-    address: '5301 Stevens Creek Blvd, Santa Clara, CA 95051',
-    category: 'Science'
-  },
-  {
-    title: 'Visa',
-    location: {lat: 37.4262136, lng: -122.1431343},
-    address: '385 Sherman Ave, Palo Alto, CA 94306',
-    category: 'Payments'
-  }
-];
+//This file provides functionaliy to the interactive map.
+//Completed 9/27/2018.
 
+//Declaring global variables
 var map;
 
 var bounds;
@@ -119,6 +18,19 @@ var mainInfoWindow;
 
 var drawingManager;
 
+var Company = function(data) {
+  this.name = data.title;
+  this.location = data.location;
+  this.address = data.address;
+  this.category = data.category;
+  this.logo = data.logo;
+};
+
+// Error handling for Google Maps initialzation.
+function googleMapsFail() {
+  alert('Google Maps could not be loaded at this time.');
+}
+
 //Initializing the map and core map variables.
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -126,7 +38,7 @@ function initMap() {
     zoom: 11.2,
     mapTypeControl: false
   });
-
+  //Creation of markers and their color, size, etc.
   function makeMarkerIcon(markerColor) {
     var markerImage = new google.maps.MarkerImage(
       'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
@@ -143,9 +55,9 @@ function initMap() {
   defaultIcon = makeMarkerIcon('FF4B40');
 
   highlightedIcon = makeMarkerIcon('86DFF9');
-
+  //Creation of infowindow instance
   mainInfoWindow = new google.maps.InfoWindow();
-
+  //Creation of the drawing manager used when toggleDrawingTools is called.
   drawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: google.maps.drawing.OverlayType.POLYGON,
     drawingControl: true,
@@ -156,364 +68,388 @@ function initMap() {
       ]
     }
   });
-}
-
-var Company = function(data) {
-  this.name = data.title;
-  this.location = data.location;
-  this.address = data.address;
-  this.category = data.category;
-}
 
 
-var ViewModel = function() {
+  var ViewModel = function() {
+    var self = this;
+    //Creation of observables used for bindings in HTML file to update the view.
+    this.companyList = ko.observableArray([]);
 
-  var self = this;
+    this.companyName = ko.observable();
 
-  this.companyList = ko.observableArray([]);
+    this.chosenCompany = ko.observable();
 
-  this.companyName = ko.observable();
+    this.companyAddress = ko.observable();
 
-  this.chosenCompany = ko.observable();
+    this.wikiLinks = ko.observableArray([]);
 
-  this.companyAddress = ko.observable();
+    this.nytLinks = ko.observableArray([]);
 
-  this.wikiLinks = ko.observableArray([]);
+    this.chosenWiki = ko.observable();
 
-  this.nytLinks = ko.observableArray([]);
+    this.chosenNYT = ko.observable();
 
-  this.chosenWiki = ko.observable();
+    this.showHideCompaniesText = ko.observable('Hide All Companies');
 
-  this.chosenNYT = ko.observable();
+    this.drawingModeText = ko.observable('Drawing Mode Off');
 
-  this.showHideCompaniesText = ko.observable('Hide All Companies');
+    this.showHideMainPanel = ko.observable(true);
 
-  this.drawingModeText = ko.observable('Drawing Mode Off');
+    this.showHideInfoPanel = ko.observable(true);
 
-  this.showHideMainPanel = ko.observable(true);
+    this.showHidePanelText = ko.observable('Hide Panels');
 
-  this.showHideInfoPanel = ko.observable(true);
+    this.chosenCategory = ko.observable(false);
 
-  this.showHidePanelText = ko.observable('Hide Panels');
+    this.panelSelection = ko.observable();
 
-  this.chosenCategory = ko.observable(false);
+    this.panelCompanyList = ko.observableArray([]);
 
-  this.panelSelection = ko.observable();
+    this.zoomButtonStatus = ko.observable(false);
 
-  this.panelCompanyList = ko.observableArray([]);
+    this.zoomButtonText = ko.observable('Zoom');
 
-  this.categories = ko.observableArray([
-    'All',
-    'Computers',
-    'Military',
-    'Games',
-    'IT',
-    'Internet',
-    'Entertainment',
-    'Transportation',
-    'Science',
-    'Payments'
-  ]);
+    this.companyLogo = ko.observable();
 
-  locations.forEach(function(companyInfo) {
-    self.companyList.push(new Company(companyInfo));
-    self.panelCompanyList.push(new Company(companyInfo));
-  });
-  //Initial loading and populating of all markers as well as making the inital
-  //request for asychronous information on the map's default location.
-  this.populateMarkers = function() {
-    self.companyName('Silicon Valley');
-    self.companyAddress('California, USA')
-    self.sendAJAX();
-    bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < locations.length; i++) {
-      var position = locations[i].location;
-      var title = locations[i].title;
-      var address = locations[i].address;
-      //Creating the marker.
-      var marker = new google.maps.Marker({
-        position: position,
-        title: title,
-        address: address,
-        animation: null,
-        icon: defaultIcon,
-        id: i
-      });
-      //Pushing all markers to the markers list and adding listeners.
-      markers.push(marker);
-      marker.addListener('click', function() {
-        self.companyName(this.title);
-        self.companyAddress(this.address);
-        self.sendAJAX();
-        if (self.showHidePanelText() != 'Show Panels') {
-          self.showHideInfoPanel(true);
-        }
-        for (var i = 0; i < markers.length; i++) {
-          markers[i].setAnimation(null);
-        }
-        this.setAnimation(google.maps.Animation.BOUNCE);
-        self.populateInfoWindow(this, mainInfoWindow);
-      });
-      marker.addListener('mouseover', function() {
-        this.setIcon(highlightedIcon);
-      });
-      marker.addListener('mouseout', function() {
-        this.setIcon(defaultIcon);
-      });
-    }
-    for (var i = 0; i < markers.length; i++) {
-      markers[i].setAnimation(google.maps.Animation.DROP)
-      markers[i].setMap(map);
-      bounds.extend(markers[i].position);
-    }
-    map.fitBounds(bounds);
-  }
-  //Shows all markers on the map and pans out the map view as well as requesting
-  //asynchronous information about the map's location.
-  this.showCompanies = function() {
-    self.companyName('Silicon Valley');
-    self.companyAddress('California, USA');
-    self.sendAJAX();
-    if (self.showHidePanelText() === 'Show Panels') {
-      self.showHideInfoPanel(false);
-    } else {
-      self.showHideInfoPanel(true);
-    }
-    for (var i = 0; i < markers.length; i++) {
-      markers[i].setAnimation(google.maps.Animation.DROP)
-      markers[i].setMap(map);
-      bounds.extend(markers[i].position);
-    }
-    map.fitBounds(bounds);
-  }
-  //Hides all map markers.
-  this.hideCompanies = function() {
-    for (var i = 0; i < markers.length; i++) {
-      markers[i].setMap(null);
-      markers[i].setAnimation(google.maps.Animation.DROP);
-    }
-  }
-  //Enables an HTML button to have dual functionality depending on the state
-  //of the map.
-  this.showHideCompanies = function() {
-    if (self.showHideCompaniesText() === 'Show All Companies') {
-      self.showCompanies();
-      self.showHideCompaniesText('Hide All Companies');
-    } else {
-      self.hideCompanies();
-      self.showHideCompaniesText('Show All Companies');
-    }
-  }
-  //Shows selected company, zooms, opens infowindow, and updates asynchronous
-  //company information.
-  this.showSingleCompany = function() {
-    self.companyName(self.chosenCompany().name);
-    self.companyAddress(self.chosenCompany().address);
-    this.hideCompanies();
-    self.sendAJAX();
-    self.showHideCompaniesText('Show All Companies');
-    if (self.showHidePanelText() === 'Hide Panels') {
-      self.showHideInfoPanel(true);
-    }
-    var mainInfoWindow = new google.maps.InfoWindow();
-    for (var i = 0; i < markers.length; i++) {
-      if (self.companyName() === markers[i].title) {
-        markers[i].setAnimation(google.maps.Animation.BOUNCE);
+    this.categories = ko.observableArray([
+      'All',
+      'Computers',
+      'Military',
+      'Games',
+      'IT',
+      'Internet',
+      'Entertainment',
+      'Transportation',
+      'Science',
+      'Payments'
+    ]);
+    //Pushes all company data to observableArray for use in the view.
+    locations.forEach(function(companyInfo) {
+      self.companyList.push(new Company(companyInfo));
+      self.panelCompanyList.push(new Company(companyInfo));
+    });
+    //Initial loading and populating of all markers as well as making the inital
+    //request for asychronous information on the map's default location.
+    this.populateMarkers = function() {
+      self.companyName('Silicon Valley');
+      self.companyAddress('California, USA');
+      self.companyLogo('img/company_logos/silicon_valley.png');
+      self.sendAJAX();
+      bounds = new google.maps.LatLngBounds();
+      for (var i = 0; i < locations.length; i++) {
+        var position = locations[i].location;
+        var title = locations[i].title;
+        var address = locations[i].address;
+        var logo = locations[i].logo;
+        //Creating the marker.
+        var marker = new google.maps.Marker({
+          position: position,
+          title: title,
+          address: address,
+          logo: logo,
+          animation: null,
+          icon: defaultIcon,
+          id: i
+        });
+        //Pushing all markers to the markers list and adding listeners.
+        markers.push(marker);
+        marker.addListener('click', function() {
+          self.companyLogo(this.logo);
+          self.companyName(this.title);
+          self.companyAddress(this.address);
+          self.sendAJAX();
+          self.zoomButtonStatus(true);
+          if (self.showHidePanelText() != 'Show Panels') {
+            self.showHideInfoPanel(true);
+          }
+          for (var i = 0; i < markers.length; i++) {
+            markers[i].setAnimation(null);
+          }
+          this.setAnimation(google.maps.Animation.BOUNCE);
+          self.populateInfoWindow(this, mainInfoWindow);
+        });
+        marker.addListener('mouseover', function() {
+          this.setIcon(highlightedIcon);
+        });
+        marker.addListener('mouseout', function() {
+          this.setIcon(defaultIcon);
+        });
+      }
+      for (var j = 0; j < markers.length; j++) {
+        markers[j].setAnimation(google.maps.Animation.DROP);
+        markers[j].setMap(map);
+        bounds.extend(markers[j].position);
+      }
+      map.fitBounds(bounds);
+    };
+    //Shows all markers on the map and pans out the map view as well as requesting
+    //asynchronous information about the map's location.
+    this.showCompanies = function() {
+      self.companyName('Silicon Valley');
+      self.companyAddress('California, USA');
+      self.companyLogo('img/company_logos/silicon_valley.png');
+      self.sendAJAX();
+      self.zoomButtonStatus(false);
+      if (self.showHidePanelText() === 'Show Panels') {
+        self.showHideInfoPanel(false);
+      } else {
+        self.showHideInfoPanel(true);
+      }
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setAnimation(google.maps.Animation.DROP);
         markers[i].setMap(map);
-        map.panTo(markers[i].position);
-        map.setZoom(13);
-        self.populateInfoWindow(markers[i], mainInfoWindow);
-        document.getElementById('company-list').addEventListener('select', function() {
-          mainInfoWindow.close();
-        });
-        document.getElementById('show-companies').addEventListener('click', function() {
-          mainInfoWindow.close();
-        });
+        bounds.extend(markers[i].position);
       }
-    }
-  }
-  //Populates infowindow with company name and streetview.
-  this.populateInfoWindow = function(marker, mainInfoWindow) {
-    if (mainInfoWindow.marker != marker) {
-      mainInfoWindow.setContent('');
-      mainInfoWindow.marker = marker;
-      mainInfoWindow.addListener('closeclick', function() {
-        mainInfoWindow.marker = null;
-        marker.setAnimation(null);
-      });
-      var streetViewService = new google.maps.StreetViewService();
-      var radius = 125;
-
-      this.getStreetView = function(data, status) {
-        if (status === google.maps.StreetViewStatus.OK) {
-          var nearStreetViewLocation = data.location.latLng;
-          var heading = google.maps.geometry.spherical.computeHeading(
-            nearStreetViewLocation, marker.position);
-            mainInfoWindow.setContent('<div><strong>' + marker.title + '</div></strong>' +
-              '<hr>' + '<div id="pano"></div>' + '<hr>');
-            var panoramaOptions = {
-              position: nearStreetViewLocation,
-              pov: {
-                heading: heading,
-                pitch: 20
-              }
-            };
-          var panorama = new google.maps.StreetViewPanorama(
-            document.getElementById('pano'), panoramaOptions);
-          //Error handling if streetview isn't found.
-        } else {
-          mainInfoWindow.setContent('<div><strong>' + marker.title + '</div></strong>' +
-            '<hr>' + '<div>No Streetview found</div>' + '<hr>');
-        }
-      }
-      streetViewService.getPanoramaByLocation(marker.position, radius, this.getStreetView);
-      mainInfoWindow.open(map, marker);
-    }
-  }
-
-  //Sets the status of polygon drawing search mode to on or off and hides/shows
-  //markers accordingly as well as changes CSS style of drawing mode button.
-  this.toggleDrawingTools = function() {
-    drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
-    if (drawingManager.map) {
-      document.getElementById('drawing-tools').setAttribute('class', 'drawing-btn');
-      self.drawingModeText('Drawing Mode Off');
-      drawingManager.setMap(null);
-      if (polygon) {
-        polygon.setMap(null);
-      }
-      self.showCompanies();
-      self.showHideCompaniesText('Hide All Companies');
-    } else {
+      map.fitBounds(bounds);
+    };
+    //Hides all map markers.
+    this.hideCompanies = function() {
       for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
         markers[i].setAnimation(google.maps.Animation.DROP);
       }
-      self.showHideInfoPanel(false);
-      drawingManager.setMap(map);
-      drawingManager.addListener('overlaycomplete', function(event) {
-        drawingManager.setDrawingMode(null);
-        polygon = event.overlay;
-        polygon.setEditable(true);
-        self.polygonSearch();
-        polygon.getPath().addListener('set_at', self.polygonSearch);
-        polygon.getPath().addListener('insert_at', self.polygonSearch);
-      });
-      document.getElementById('drawing-tools').setAttribute('class', 'btn-drawing-mode-on');
-      self.drawingModeText('Drawing Mode On');
-      self.showHideCompaniesText('Show All Companies');
-    }
-  }
-
-  this.polygonSearch = function() {
-    for (var i = 0; i < markers.length; i++) {
-      if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
-        markers[i].setMap(map);
+    };
+    //Enables an HTML button to have dual functionality depending on the state
+    //of the map.
+    this.showHideCompanies = function() {
+      if (self.showHideCompaniesText() === 'Show All Companies') {
+        self.showCompanies();
+        self.showHideCompaniesText('Hide All Companies');
       } else {
-        markers[i].setMap(null);
+        self.hideCompanies();
+        self.showHideCompaniesText('Show All Companies');
       }
-    }
-  }
-
-  //AJAX/JSON requests getting unique results for each selected business asychronously.
-  this.sendAJAX = function() {
-    self.wikiLinks([]);
-    self.nytLinks([]);
-    //Shows error message if the request in unsuccessful.
-    var wikiRequestTimeout = setTimeout(function() {
-      alert('Wikipedia links for ' + self.companyName() + ' could not be loaded at this time');
-    }, 5000);
-    var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search='
-    + self.companyName() + '&format=json&callback=wikiCallback';
-    $.ajax({
-      url: wikiURL,
-      dataType: "jsonp",
-      success: function(response) {
-        var wikiResults = response[1];
-        for (var i = 0; i < wikiResults.length; i++)  {
-          var title = wikiResults[i];
-          var url = 'http://en.wikipedia.org/wiki/' + title.replace(/ /g, "_");
-          self.wikiLinks.push({title: title, url: url});
-          //Clears timed error message if request is successful.
-          clearTimeout(wikiRequestTimeout);
-        }
-      }
-    });
-    var nytURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?q='
-        + self.companyName().replace(/ /g, "%") +
-        '&sort=newest&api-key=544f5bc5e26648598845064157acd780';
-    $.getJSON(nytURL, function (data) {
-      var nytResults = data.response.docs;
-      for (var i = 0; i < nytResults.length; i++) {
-        var article = nytResults[i];
-        var headline = article.headline.main;
-        var headlineURL = article.web_url;
-        var snippet = article.snippet;
-        self.nytLinks.push({headline: headline, url: headlineURL, snippet: snippet});
-      };
-      //Shows error message if the request in unsuccessful.
-    }).fail(function(e){
-        alert('NY Times articles for ' + self.companyName() +
-          ' could not be loaded at this time');
-    });
-  }
-
-  this.followWikiLink = function() {
-    if (typeof self.chosenWiki() != 'undefined') {
-      window.open(self.chosenWiki().url);
-    }
-  }
-
-  this.followNYTLink = function() {
-    if (typeof self.chosenNYT() != 'undefined') {
-      window.open(self.chosenNYT().url);
-    }
-  }
-
-  this.togglePanel = function() {
-    if (self.showHidePanelText() === 'Hide Panels') {
-      self.showHideMainPanel(false);
-      self.showHideInfoPanel(false);
-      self.showHidePanelText('Show Panels');
-    } else {
-      self.showHideMainPanel(true);
-      self.showHideInfoPanel(true);
-      self.showHidePanelText('Hide Panels');
-    }
-  }
-
-  this.categorySearch = function() {
-    self.panelCompanyList([]);
-    for (var i = 0; i < self.companyList().length; i++) {
-      var company = self.companyList()[i];
-      if (company.category === self.chosenCategory()) {
-        self.panelCompanyList.push(company);
-        for (var x = 0; x < markers.length; x++) {
-          var marker = markers[x];
-          marker.setMap(null);
-          marker.setAnimation(google.maps.Animation.DROP);
-          for (var j = 0; j < self.panelCompanyList().length; j++) {
-            var filteredCompanies = self.panelCompanyList()[j];
-            if (filteredCompanies.name === markers[x].title) {
-              marker.setMap(map);
-            }
+    };
+    //Shows selected company, zooms, opens infowindow, and updates asynchronous
+    //company information.
+    this.showSingleCompany = function() {
+      for (var i = 0; i < markers.length; i++) {
+        if (self.companyName() === markers[i].title) {
+          markers[i].setAnimation(google.maps.Animation.BOUNCE);
+          if (self.zoomButtonText() === 'Zoom') {
+            map.panTo(markers[i].position);
+            map.setZoom(17);
+          } else {
+            map.setZoom(11.2);
+            map.fitBounds(bounds);
+          }
+          self.populateInfoWindow(markers[i], mainInfoWindow);
+          if (self.zoomButtonText() === 'Zoom') {
+            self.zoomButtonText('Pan Out');
+          } else {
+            self.zoomButtonText('Zoom');
           }
         }
-      } else if (self.chosenCategory() === 'All') {
-        self.panelCompanyList.push(company);
-        for (var x = 0; x < markers.length; x++) {
-          markers[x].setAnimation(google.maps.Animation.DROP);
-          markers[x].setMap(map);
+      }
+    };
+    //Populates infowindow with company name and streetview.
+    this.populateInfoWindow = function(marker, mainInfoWindow) {
+      if (mainInfoWindow.marker != marker) {
+        mainInfoWindow.setContent('');
+        mainInfoWindow.marker = marker;
+        mainInfoWindow.addListener('closeclick', function() {
+          mainInfoWindow.marker = null;
+          marker.setAnimation(null);
+        });
+        var streetViewService = new google.maps.StreetViewService();
+        var radius = 125;
+
+        this.getStreetView = function(data, status) {
+          if (status === google.maps.StreetViewStatus.OK) {
+            var nearStreetViewLocation = data.location.latLng;
+            var heading = google.maps.geometry.spherical.computeHeading(
+              nearStreetViewLocation, marker.position);
+              mainInfoWindow.setContent('<div><strong>' + marker.title + '</div></strong>' +
+                '<hr>' + '<div id="pano" class="panorama"></div>' + '<hr>');
+              var panoramaOptions = {
+                position: nearStreetViewLocation,
+                pov: {
+                  heading: heading,
+                  pitch: 20
+                }
+              };
+            var panorama = new google.maps.StreetViewPanorama(
+              document.getElementById('pano'), panoramaOptions);
+            //Error handling if streetview isn't found.
+          } else {
+            mainInfoWindow.setContent('<div><strong>' + marker.title + '</div></strong>' +
+              '<hr>' + '<div>No Streetview found</div>' + '<hr>');
+          }
+        };
+        streetViewService.getPanoramaByLocation(marker.position, radius, this.getStreetView);
+        mainInfoWindow.open(map, marker);
+      }
+    };
+
+    //Sets the status of polygon drawing search mode to on or off and hides/shows
+    //markers accordingly as well as changes CSS style of drawing mode button.
+    this.toggleDrawingTools = function() {
+      drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+      if (drawingManager.map) {
+        document.getElementById('drawing-tools').setAttribute('class', 'drawing-btn');
+        self.drawingModeText('Drawing Mode Off');
+        self.showHideInfoPanel(true);
+        self.showHideMainPanel(true);
+        self.showHidePanelText('Hide Panels');
+        drawingManager.setMap(null);
+        if (polygon) {
+          polygon.setMap(null);
+        }
+        self.showCompanies();
+        self.showHideCompaniesText('Hide All Companies');
+      } else {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+          markers[i].setAnimation(google.maps.Animation.DROP);
+        }
+        self.showHideInfoPanel(false);
+        self.showHideMainPanel(false);
+        self.showHidePanelText('Show Panels');
+        drawingManager.setMap(map);
+        drawingManager.addListener('overlaycomplete', function(event) {
+          drawingManager.setDrawingMode(null);
+          polygon = event.overlay;
+          polygon.setEditable(true);
+          self.polygonSearch();
+          polygon.getPath().addListener('set_at', self.polygonSearch);
+          polygon.getPath().addListener('insert_at', self.polygonSearch);
+        });
+        document.getElementById('drawing-tools').setAttribute('class', 'btn-drawing-mode-on');
+        self.drawingModeText('Drawing Mode On');
+        self.showHideCompaniesText('Show All Companies');
+      }
+    };
+    //Displays markers within drawn polygon when drawing tools are used.
+    this.polygonSearch = function() {
+      for (var i = 0; i < markers.length; i++) {
+        if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
+          markers[i].setMap(map);
+        } else {
+          markers[i].setMap(null);
         }
       }
-    }
-  }
-  //Ensures Google Maps API is loaded before calling the populateMarkers function.
-  if (typeof google === 'object' && typeof google.maps === 'object') {
-    self.populateMarkers();
-  } else {
-    setTimeout(self.populateMarkers, 1000);
-  }
-}
+    };
 
-ko.applyBindings(new ViewModel());
+    //AJAX/JSON requests getting unique results for each selected business asychronously.
+    this.sendAJAX = function() {
+      self.wikiLinks([]);
+      self.nytLinks([]);
+      //Shows error message if the request in unsuccessful.
+      var wikiRequestTimeout = setTimeout(function() {
+        alert('Wikipedia links for ' + self.companyName() + ' could not be loaded at this time');
+      }, 5000);
+      var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' +
+      self.companyName() + '&format=json&callback=wikiCallback';
+      //AJAX call for Wikipedia links relating to selected company.
+      $.ajax({
+        url: wikiURL,
+        dataType: "jsonp",
+        success: function(response) {
+          var wikiResults = response[1];
+          for (var i = 0; i < wikiResults.length; i++)  {
+            var title = wikiResults[i];
+            var url = 'http://en.wikipedia.org/wiki/' + title.replace(/ /g, "_");
+            self.wikiLinks.push({title: title, url: url});
+            //Clears timed error message if request is successful.
+            clearTimeout(wikiRequestTimeout);
+          }
+        }
+      });
+      var nytURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +
+          self.companyName().replace(/ /g, "%") +
+          '&sort=newest&api-key=544f5bc5e26648598845064157acd780';
+      //JSON call for NYT articles relating to selected company.
+      $.getJSON(nytURL, function (data) {
+        var nytResults = data.response.docs;
+        for (var i = 0; i < nytResults.length; i++) {
+          var article = nytResults[i];
+          var headline = article.headline.main;
+          var headlineURL = article.web_url;
+          var snippet = article.snippet;
+          self.nytLinks.push({headline: headline, url: headlineURL, snippet: snippet});
+        }
+      //Shows error message if the request in unsuccessful.
+      }).fail(function(e){
+          alert('NY Times articles for ' + self.companyName() +
+            ' could not be loaded at this time');
+      });
+    };
+    //Function that opens link in new tab when Wikipedia link selected from dropdown.
+    this.followWikiLink = function() {
+      if (typeof self.chosenWiki() != 'undefined') {
+        window.open(self.chosenWiki().url);
+      }
+    };
+    //Function that opens link in new tab when NYT article selected from dropdown.
+    this.followNYTLink = function() {
+      if (typeof self.chosenNYT() != 'undefined') {
+        window.open(self.chosenNYT().url);
+      }
+    };
+    //Shows or hides both the info panel and main panel
+    this.togglePanel = function() {
+      if (self.showHidePanelText() === 'Hide Panels') {
+        self.showHideMainPanel(false);
+        self.showHideInfoPanel(false);
+        self.showHidePanelText('Show Panels');
+      } else {
+        self.showHideMainPanel(true);
+        self.showHideInfoPanel(true);
+        self.showHidePanelText('Hide Panels');
+      }
+    };
+    //Function that filters panel list results depending on selected category.
+    this.categorySearch = function() {
+      self.panelCompanyList([]);
+      for (var i = 0; i < self.companyList().length; i++) {
+        var company = self.companyList()[i];
+        if (company.category === self.chosenCategory()) {
+          self.panelCompanyList.push(company);
+          for (var x = 0; x < markers.length; x++) {
+            var marker = markers[x];
+            marker.setMap(null);
+            marker.setAnimation(google.maps.Animation.DROP);
+            for (var j = 0; j < self.panelCompanyList().length; j++) {
+              var filteredCompanies = self.panelCompanyList()[j];
+              if (filteredCompanies.name === markers[x].title) {
+                marker.setMap(map);
+              }
+            }
+          }
+        } else if (self.chosenCategory() === 'All') {
+          self.panelCompanyList.push(company);
+          for (var z = 0; z < markers.length; z++) {
+            markers[z].setAnimation(google.maps.Animation.DROP);
+            markers[z].setMap(map);
+          }
+        }
+      }
+    };
+    //Function that opens infowindow, makes AJAX calls, bounces marker, and
+    //updates information panel of the company selected from main panel.
+    this.panelCompanySelection = function(selectedCompany) {
+      for (var i = 0; i < self.panelCompanyList().length; i++) {
+        var clickedCompany = self.panelCompanyList()[i];
+        if (selectedCompany.name === clickedCompany.name) {
+          self.companyName(clickedCompany.name);
+          self.companyLogo(clickedCompany.logo);
+          self.companyAddress(clickedCompany.address);
+          self.sendAJAX();
+          self.zoomButtonStatus(true);
+          if (self.showHidePanelText() != 'Show Panels') {
+            self.showHideInfoPanel(true);
+          }
+        }
+      }
+      for (var j = 0; j < markers.length; j++) {
+        markers[j].setAnimation(null);
+        if (self.companyName() === markers[j].title) {
+          markers[j].setAnimation(google.maps.Animation.BOUNCE);
+          self.populateInfoWindow(markers[j], mainInfoWindow);
+        }
+      }
+    };
+    this.populateMarkers();
+  };
+  ko.applyBindings(new ViewModel());
+}

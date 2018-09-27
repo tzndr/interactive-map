@@ -6,39 +6,43 @@ body {
  padding: 0;
 }
 
-#map {
+option {
+  text-align: center;
+}
+
+.map-canvas {
  height: 100%;
 }
 
-#floating-panel-main {
+.main-panel {
   position: absolute;
   line-height: 30px;
   width: 13%;
   height: auto;
   min-width: 150px;
   top: 40px;
-  left: 8px;
+  left: 0;
   z-index: 5;
   background-color: white;
   padding: 0;
   border: 1px solid #464343;
-  border-radius: 10px;
+  border-radius: 0 10px 10px 0;
   text-align: center;
 }
 
-.info-box {
+.info-panel {
   position: absolute;
   line-height: 30px;
   width: 13%;
   height: auto;
   min-width: 150px;
-  top: 40px;
-  right: 8px;
+  top: 20%;
+  right: 0;
   z-index: 5;
   background-color: white;
   padding: 0 5px 10px 5px;
   border: 1px solid #464343;
-  border-radius: 10px;
+  border-radius: 10px 0 0 10px;
   text-align: center;
 }
 
@@ -57,17 +61,12 @@ body {
   line-height: 2px;
 }
 
-#company-info-headline {
-  padding: 5px 0 5px 0;
-  font: bold 18pt georgia, helvetica;
-  width: 90%;
+.company-logo {
+  padding: 10px 0 0 0;
+  width: 75%;
   height: auto;
   margin: auto;
-}
-
-.subheading-text {
-  margin: 0 0 10px 0;
-  font: 16pt helvetica, arial;
+  text-align: center;
 }
 
 .heading-text {
@@ -75,40 +74,18 @@ body {
   text-align: center;
 }
 
-#pano {
-  width: 200px;
-  height: 200px;
-}
-
-.company-list-container {
-  background-color: #F6CD0E;
-  padding: 1px 0 4px 0;
-  border-radius: 0 0 6px 6px;
-  position: absolute;
-  top: 1px;
-  right: 207px;
-  z-index: 5;
-  text-align: center;
-}
-
 .company-list {
-  background-color: #F6CD0E;
   margin: 0;
+  width: 80%;
   text-align: center;
-  border: 0px;
   outline: none;
   cursor: pointer;
 }
 
-#company-info-wiki,
-#company-info-nytimes {
+.article-dropdown {
   width: 90%;
   font: 11pt helvetica, arial;
   margin: 0 0 10px 0;
-}
-
-#drawing-tools {
-  outline: none;
 }
 
 .hide-panel-btn {
@@ -120,7 +97,7 @@ body {
   position: absolute;
   width: 100px;
   top: 0;
-  left: 8px;
+  left: 264px;
   z-index: 5;
   outline: none;
   cursor: pointer;
@@ -131,11 +108,11 @@ body {
   background-color: #F6CD0E;
   color: black;
   padding: 5px 0;
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 0;
   position: absolute;
   width: 125px;
   top: 0;
-  right: 345px;
+  left: 0;
   z-index: 5;
   outline: none;
   cursor: pointer;
@@ -150,9 +127,10 @@ body {
   position: absolute;
   width: 125px;
   top: 0;
-  right: 75px;
+  left: 132px;
   z-index: 5;
   cursor: pointer;
+  outline: none;
 }
 
 .btn-drawing-mode-on {
@@ -164,13 +142,10 @@ body {
   position: absolute;
   width: 125px;
   top: 0;
-  right: 75px;
+  left: 132px;
   z-index: 5;
   cursor: pointer;
-}
-
-option {
-  text-align: center;
+  outline: none;
 }
 
 .panel-hr {
@@ -190,7 +165,7 @@ option {
 
 .search-field {
   margin: auto;
-  text-align: center;
+  width: 80%;
 }
 
 .panel-list {
@@ -204,6 +179,17 @@ option {
   font: bold 11pt helvetica, arial;
   text-align: center;
   padding: 3px 2px;
+  cursor: pointer;
+}
+
+.panel-list-item:hover {
+  margin: 0;
+  font: bold 11pt helvetica, arial;
+  text-align: center;
+  padding: 3px 2px;
+  cursor: pointer;
+  background-color: #1AA86F;
+  color: white;
 }
 
 .panel-filter-text {
@@ -211,30 +197,37 @@ option {
   margin: 0;
 }
 
+.zoom-pan-btn {
+  width: 80%;
+  background-color: #1AA86F;
+  color: white;
+  border-radius: 5px;
+  font: 10pt helvetica, arial;
+  padding: 5px 0;
+  outline: none;
+  cursor: pointer;
+}
 
+.panorama {
+  width: 200px;
+  height: 200px;
+}
 
+@media screen and (max-width: 500px) {
 
-
-
-
-
-
-
-
-
-@media screen and (max-width: 485px) {
-  #floating-panel-main {
+  .info-panel {
     position: absolute;
     line-height: 30px;
-    width: 20%;
+    width: 13%;
     height: auto;
-    top: 30px;
-    left: 8px;
+    min-width: 150px;
+    top: 340px;
+    right: 0;
     z-index: 5;
     background-color: white;
-    padding: 0 0 10px 0;
+    padding: 0 5px 10px 5px;
     border: 1px solid #464343;
-    border-radius: 3px;
+    border-radius: 10px 0 0 10px;
     text-align: center;
   }
 
@@ -244,45 +237,10 @@ option {
     font-size: 8pt;
   }
 
-  #company-info-headline {
-    padding: 10px 0 5px 0;
-    font: bold 12pt georgia, helvetica;
-    width: 90%;
-    margin: auto;
-  }
-
-  #company-list,
-  #company-info-wiki,
-  #company-info-nytimes {
+  .article-dropdown {
     width: 90%;
     font: 8pt helvetica, arial;
     margin: 0 0 10px 0;
-  }
-
-  .show-companies-btn {
-    width: 80%;
-    font: 8pt helvetica, arial;
-    background-color: #FFC300;
-    padding: 4px;
-    border-radius: 3px;
-  }
-
-  .drawing-btn {
-    width: 80%;
-    font: 8pt helvetica, arial;
-    color: white;
-    background-color: #D4452C;
-    padding: 4px;
-    border-radius: 3px;
-  }
-
-  .btn-drawing-mode-on {
-    width: 80%;
-    font: 8pt helvetica, arial;
-    background-color: #67B541;
-    color: white;
-    padding: 4px;
-    border-radius: 3px;
   }
 
   .address {
@@ -293,11 +251,6 @@ option {
 
   .heading-text {
     margin: auto;
-    font: 10pt helvetica, arial;
-  }
-
-  .subheading-text {
-    margin: 0 0 10px 0;
     font: 10pt helvetica, arial;
   }
 
