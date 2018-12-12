@@ -1,9 +1,7 @@
-# neighborhood_map
+# Interactive Map with Google Maps API
 
 ## About
-This is an interactive map of Silicon Valley using Google Maps API along with other 3rd-party APIs. It is written with 
-JavaScript using KnockoutJS and observables to update the view and JQuery for asynchronous AJAX calls to the 3rd-party APIs. The map is filterable through menus and drawing tools and offers detailed information on each selected company including 
-streetview within an infowindow, address, and relevant Wikipedia links and New York Times articles.
+An interactive map of Silicon Valley created with Google Maps API, Javascript, HTML, CSS, and the KnockoutJS framework. This dynamic map is filterable and includes highlighted locations that use observables to update the webpage asynchronously with location-specific information, depending on the selected marker. This information includes an interactive Google StreetView image, company logo and address, as well as relevant New York Times and Wikipedia articles gathered asynchronously using AJAX, JSON, and third party APIs.
 
 ## Opening the Map
 1. Save all project files and folders in a single directory.
