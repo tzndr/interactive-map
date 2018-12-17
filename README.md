@@ -6,5 +6,4 @@ An interactive map of Silicon Valley created with Google Maps API, Javascript, H
 ## Opening the Map
 1. Save all project files and folders in a single directory.
 1. Open the `index.html` file in your preferred browser.
-1. For link functionality within the map, temporarily disable your browser's pop-up blocker or allow popups from this site 
-as all links open in a separate tab.
+1. For link functionality within the map, you may need to temporarily disable your browser's pop-up blocker or allow popups from this site as all links open in a separate tab.
